@@ -1,0 +1,82 @@
+participant_name: "fotis"
+
+game:
+    discrete_input: True # True for Discrete or False for Continuous human input
+
+    test_model: False # True if no training happens
+    checkpoint_name: "sac_20201216_17-25-51" # Date and time of the experiments. Used loading the model created that date (if asked by the user)
+    load_checkpoint: False # True if loading stored model
+    second_human: False # False if playing with RL agent
+    agent_only: False # True if playing only the RL agent (no human-in-the-loop)
+    verbose: True # Used for logging
+    save: True # Save models and logs
+
+    # position of the goal on the board
+    goal: "left_down" # "left_down" "left_up" "right_down"
+
+SAC:
+  # SAC parameters
+  # NOTE: Only discrete SAC is compatible with the game so far
+  discrete: True
+  layer1_size: 32   # Number of variables in hidden layer
+  layer2_size: 32   # Number of variables in hidden layer
+  batch_size: 256
+  gamma: 0.99  # discount factor
+  tau: 0.005
+  alpha: 0.0003
+  beta: 0.0003
+  target_entropy_ratio: 0.4
+
+  # Type of reward function
+  # Currently three reward functions are implemented
+  # The implementation and the description are in the game/rewards.py file
+  # Choose on the the following: Shafti, Distance, Timeout
+  reward_function: Shafti
+
+Experiment:
+  start_with_testing_random_agent: False # True to start experiment with testing human with random agent
+  online_updates: True # True if a single gradient update happens after every state transition
+  test_interval: 10
+
+  # offline gradient updates allocation
+  # Normal: allocates evenly the total number of updates through each session
+  # descending: allocation of total updates using geometric progression with ratio 1/2
+  scheduling: descending # descending normal big_first
+
+  ################################################################################################
+  # max_games_mode: Experiment iterates over games. Each game has a fixed max duration in seconds.
+  # max_interactions_mode: Experiment iterates over steps. Each game has a fixed max duration in seconds.
+  ################################################################################################
+  mode: max_games_mode   # Choose max_games_mode or max_interactions_mode
+
+  max_games_mode:
+    max_games: 70  # max training games per experiment
+    max_duration: 1  # max duration per game in seconds
+    buffer_memory_size: 1000000
+    action_duration: 0.2 # Time duration in sec between consecutive RL agent actions
+    start_training_step_on_game: 1 # will not train the agent before this trial
+    stop_random_agent: 1 # stops using random agent on this trial and start using SAC
+    learn_every_n_games: 1 # Perform offline gradient updates after every `learn_every_n_games` episodes
+    total_update_cycles: 280 # Total number of offline gradient updates throughout the whole experiment
+    reward_scale: 2
+    log_interval: 1  # print avg reward in the interval
+
+  max_interactions_mode:
+    total_timesteps: 3500  # Total number of interactions per game
+    max_timesteps_per_game: 40  # Max duration of an episode (in seconds). An episode ends if the ball hits the target or if we reach the time limit
+    buffer_memory_size: 1000
+    action_duration: 0.2 # Time duration between consecutive RL agent actions
+    start_training_step_on_timestep: 500 # Will not train the agent before this number of interactions occur
+    learn_every_n_timesteps: 500 # # Perform offline gradient updates after every `learn_every_n_timesteps` interactions
+    test_loop:
+    update_cycles: 20000 # Total number of offline gradient updates throughout the whole experiment
+    reward_scale: 2
+    log_interval: 2  # games
+
+  # Test the agent during training
+  test_loop:
+    max_games: 2 # total test games during each test session
+    max_duration: 1 # max duration per test game in seconds
+    action_duration: 0.2 # Time duration between consecutive RL agent actions
+    max_score: 200
+
