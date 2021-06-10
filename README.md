@@ -23,7 +23,7 @@ A human-agent collaborative game in a [virtual environment](https://github.com/T
     * `SAC/discrete`: Discrete or normal SAC (Currently only the discrete SAC is compatible with the game)
   
 ### Play
-![Game](https://github.com/ligerfotis/maze_RL_v2/blob/main/pictures/maze_tilt.png)
+![Game](https://github.com/ligerfotis/maze_RL_v2/blob/master/pictures/maze_tilt.png)
 
 * `Human only`: Use Left and Right arrows to control the tilt of the tray around its y-axis and use Up and Down arrows to control the tile of the tray around its x-axis as shown in the previous picture
 * `Human-Agent`: Use Left and Right arrows to control the tilt of the tray around its y-axis
