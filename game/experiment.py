@@ -85,7 +85,7 @@ class Experiment:
             3. testing session on recently trained agent
             4. Go To 1
         """
-        test_step_counter = 0
+        train_step_counter = 0
         running_reward = 0
         avg_length = 0
 
@@ -97,34 +97,33 @@ class Experiment:
         for i_game in range(1, self.max_games + 1):
             print("Resuming Training")
             start_game_time = time.time()
-            prev_observation = self.env.reset()  # stores the state of the environment
+            prev_observation, setting_up_duration = self.env.reset()  # stores the state of the environment
             timed_out = False  # used to check if we hit the maximum train_game_number duration
             game_reward = 0  # keeps track of the rewards for each train_game_number
             dist_travel = 0  # keeps track of the ball's travelled distance
 
             print("Episode: " + str(i_game))
 
-            duration_pause = 0  # keeps track of the pause time
             self.save_models = True  # flag for saving RL models
-            redundant_end_duration = 0  # duration in the train_game_number that is not playable by the user
+            redundant_end_duration = setting_up_duration  # duration in the game that is not playable by the user
 
             # 1. Training Session
             while True:
                 train_game_start_time = time.time()
                 self.total_steps += 1
-                test_step_counter += 1  # keep track of the step number for each game
+                train_step_counter += 1  # keep track of the step number for each game
 
                 env_agent_action, real_agent_action = self.get_agent_action(prev_observation, i_game)
 
-                # check if the game has timed out
-                if time.time() - start_game_time >= self.max_game_duration:
-                    timed_out = True
-
                 # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.goal, self.action_duration, duration_pause)
+                transition = self.env.step(env_agent_action, timed_out, self.goal, self.action_duration)
                 observation, reward, done, train_fps, duration_pause, action_list = transition
 
                 redundant_end_duration += duration_pause  # keep track of the total paused time
+
+                # check if the game has timed out
+                if time.time() - start_game_time - redundant_end_duration >= self.max_game_duration:
+                    timed_out = True
 
                 # keep track of the fps
                 self.train_fps_list.append(train_fps)
@@ -150,12 +149,13 @@ class Experiment:
                 self.df = self.df.append(new_row, ignore_index=True)
 
                 # calculate game duration
-                train_step_duration = time.time() - train_game_start_time
+                train_step_duration = time.time() - train_game_start_time - duration_pause
                 self.train_step_duration_list.append(train_step_duration)
 
                 # set the observation for the next step
                 prev_observation = observation
 
+                # the ball has either reached the goal or the game has timed out
                 if done:
                     break
 
@@ -169,7 +169,7 @@ class Experiment:
             self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration)
 
             # update metrics about the experiment
-            self.update_train_metrics(game_reward, dist_travel, test_step_counter)
+            self.update_train_metrics(game_reward, dist_travel, train_step_counter)
 
             # 2. Offline gradient updates session
             self.offline_grad_updates_session(i_game)
@@ -178,8 +178,8 @@ class Experiment:
             self.testing_session(i_game)
 
             # logging
-            avg_length += test_step_counter
-            test_step_counter = 0
+            avg_length += train_step_counter
+            train_step_counter = 0
             avg_game_duration = np.mean(self.game_duration_list[-self.log_interval:])
             running_reward, avg_length = print_logs(self.config["game"]["verbose"],
                                                     self.config['game']['test_model'],
@@ -201,11 +201,11 @@ class Experiment:
         best_score = 0  # best score during this session
 
         for game in range(1, self.test_max_games + 1):
-            prev_observation = self.env.reset()  # get environment's initial state
+            prev_observation, setting_up_duration = self.env.reset()  # get environment's initial state
             timed_out = False  # turn to false when the game has been timed out
             game_reward = 0  # the cumulative game reward
             dist_travel = 0  # the distance that the ball travels
-            duration_pause = 0  # the time during which the agent-human team does not interact with the environmet
+            redundant_end_duration = setting_up_duration  # duration in the train_game_number that is not playable by the user
             start_game_time = time.time()  # the timestamp that the game starts
             while True:
                 test_game_step_start_time = time.time()  # the step start time
@@ -213,13 +213,14 @@ class Experiment:
 
                 env_agent_action, _ = self.get_agent_action(prev_observation, randomness_criterion)
 
-                if time.time() - start_game_time >= self.test_max_duration:
-                    timed_out = True
-
                 # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.goal, self.test_action_duration,
-                                           duration_pause)
+                transition = self.env.step(env_agent_action, timed_out, self.goal, self.test_action_duration)
                 observation, _, done, test_fps, duration_pause, action_list = transition
+
+                redundant_end_duration += duration_pause  # keep track of the total paused time
+
+                if time.time() - start_game_time - redundant_end_duration >= self.test_max_duration:
+                    timed_out = True
 
                 # keep track of the fps
                 self.test_fps_list.append(test_fps)
@@ -238,7 +239,7 @@ class Experiment:
                 self.df_test = self.df_test.append(new_row, ignore_index=True)
 
                 # calculate game step duration
-                test_step_duration = time.time() - test_game_step_start_time
+                test_step_duration = time.time() - test_game_step_start_time - duration_pause
                 self.test_step_duration_list.append(test_step_duration)
 
                 # subtract -1 for each step passed
@@ -247,10 +248,12 @@ class Experiment:
                 # set the observation for the next step
                 prev_observation = observation
 
+                # the ball has either reached the goal or the game has timed out
                 if done:
                     break
 
-            best_score = self.update_test_metrics(duration_pause, start_game_time, game_reward, dist_travel,
+            # update the testing metrics
+            best_score = self.update_test_metrics(redundant_end_duration, start_game_time, game_reward, dist_travel,
                                                   test_step_counter, best_score)
 
             test_step_counter = 0
@@ -369,9 +372,9 @@ class Experiment:
         """
         Updates experiment time duration metrics.
         """
+        # the net total duration of the experiment
         self.duration_pause_total += redundant_end_duration
         game_duration = end_game_time - start_game_time - redundant_end_duration
-        print("Game duration: " + str(game_duration))
 
         # keep track of the game duration
         self.game_duration_list.append(game_duration)

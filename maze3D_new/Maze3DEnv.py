@@ -60,7 +60,7 @@ class Maze3D:
         # retrieve the reward
         rewards.main(self.config)
 
-    def step(self, action_agent, timed_out, goal, action_duration, duration_pause):
+    def step(self, action_agent, timed_out, goal, action_duration):
         """
         Performs the action of the agent to the environment for action_duration time.
         Simultaneously, receives input from the user via the keyboard arrows.
@@ -68,16 +68,17 @@ class Maze3D:
         :param timed_out: bool variable. true if game has been timed out
         :param goal: the goal of the game
         :param action_duration: the duration of the agent's action on the game
-        :param duration_pause: the duration of the paused time
         :return: a transition [observation, reward, done, train_fps, duration_pause, action_list]
         """
-        tmp_time = time.time()
+        start_time = time.time()
+        duration_pause, current_duration_pause, extra_time = 0, 0, 0
         actions = [0, 0, 0, 0]
         action_list = []  # to store all the agent-human action pairs performed to the game.
         # perform agent's action for action_duration time
-        while (time.time() - tmp_time) < action_duration and not self.done:
+        while (time.time() - start_time - current_duration_pause) < action_duration and not self.done:
             # get keyboard action from user
-            duration_pause, _, human_actions = self.getKeyboard(actions, duration_pause)
+            current_duration_pause, _, human_actions = self.getKeyboard(actions)
+            duration_pause += current_duration_pause
             action = [action_agent, human_actions[1]]
             action_list.append(action)
 
@@ -93,21 +94,26 @@ class Maze3D:
 
             pg.display.set_caption("Running at " + str(int(fps)) + " fps")
             self.observation = self.get_state()
-            if checkTerminal(self.board.ball, goal) or timed_out:
+            if checkTerminal(self.board.ball, goal):
                 self.done = True
+                extra_time = self.display_terminating_screen()
+            elif timed_out:
+                extra_time = self.display_timed_out_screen()
+                self.done = True
+            duration_pause += extra_time
         reward = rewards.reward_function_maze(self.done, timed_out, ball=self.board.ball, goal=goal)
         return self.observation, reward, self.done, fps, duration_pause, action_list
 
-    def getKeyboard(self, actions, duration_pause):
+    def getKeyboard(self, actions):
         """
         Retrieves human's action from keyboard arrows.
         -left/right
         -space: pause (press again to unpause)
         - up/down if applicable (in 2 humans set up)
         :param actions: an action vector used to convert actions
-        :param duration_pause: the duration that the game was paused
         :return: duration_pause, action vector, human action
         """
+        duration_pause = 0
         self.discrete_input = self.config['game']['discrete_input']
         if not self.discrete_input:
             pg.key.set_repeat(10)  # argument states the difference (in ms) between consecutive press events
@@ -118,7 +124,6 @@ class Maze3D:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE and space_pressed:
                     space_pressed = False
-                    # print("space")
                     start_pause = time.time()
                     pause()
                     end_pause = time.time()
@@ -149,5 +154,62 @@ class Maze3D:
         Resets the game
         :return: the initial observation of the game
         """
+        # todo: insert her the starting graphics
+        setting_up_duration = self.display_starting_screen()
         self.__init__(config=self.config)
-        return self.observation
+        return self.observation, setting_up_duration
+
+    def display_terminating_screen(self):
+        """
+        Displays a message to the user when the goal has been reached
+        """
+        # todo: change hard-coded duration
+
+        timeStart = time.time()
+        i = 0
+        self.board.update()
+        while time.time() - timeStart <= 3:
+            glClearDepth(1000.0)
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            self.board.draw(mode=2, idx=i) # mode: 2 for reaching goal
+            pg.display.flip()
+            time.sleep(1)
+            i += 1
+        self.done = True
+        return 3
+
+    def display_timed_out_screen(self):
+        """
+        Displays a timeout message to the user
+        """
+        # todo: change hard-coded duration
+
+        timeStart = time.time()
+        i = 0
+        self.board.update()
+        while time.time() - timeStart <= 3:
+            glClearDepth(1000.0)
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            self.board.draw(mode=3, idx=i)  # mode: 3 for time out
+            pg.display.flip()
+            time.sleep(1)
+            i += 1
+        self.done = True
+        return 3
+
+    def display_starting_screen(self):
+        """
+        Displays a starting countdown message to the user before the game starts
+        """
+        # todo: change hard-coded duration
+        timeStart = time.time()
+        i = 0
+        self.board.update()
+        while time.time() - timeStart <= 5:
+            glClearDepth(1000.0)
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            self.board.draw(mode=1, idx=i)
+            pg.display.flip()
+            time.sleep(1)
+            i += 1
+        return 5
