@@ -11,23 +11,23 @@ A human-agent collaborative game in a [virtual environment](https://github.com/T
 * Run `python game/sac_maze3d_train.py game/config/<config_sac> <participant_name>` for human-agent game.
   * Notes before training: 
      * Set the <participant_name> to the name of the participant.
-     * The program will create a `/tmp` and a `/plot` folder (if they do not exist). The `/tmp` folder contains CSV files with information of the game. The `/plot` folder contains figures for tha game. See [here](#Experiment-Result-Output-Files) for more details.
+     * The program will create a `/tmp` and a `/plot` folder (if they do not exist) in the `results/` folder. The `/tmp` folder contains CSV files with information of the game. The `/plot` folder contains figures for tha game. See [here](#Experiment-Result-Output-Files) for more details.
      * The program will automatically create an identification number after your name on each folder name created
   
 
 ### Configuration
-* In the game/config folder several YAML files exist for the configuration of the game. The main parameters are listed below.
-    * `game/discrete`: True if the keyboard input is discrete (False for continuous). Details regarding the discrete and continuous human input mode can be found [here](https://github.com/ThanasisTs/maze_RL/tree/main/game)
-    * `SAC/reward_function`: Type of reward function. Details about the predefined reward funtions and how to define a new one can be found [here](https://github.com/ThanasisTs/maze_RL/tree/main/game).
-    * `Experiment/loop`: Choose how the game will be terminated; either when a number of episodes or a number of interactions is completed.
+* In the game/config folder several YAML files exist for the configuration of the experiment. The main parameters are listed below.
+    * `game/discrete`: True if the keyboard input is discrete (False for continuous). Details regarding the discrete and continuous human input mode can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game)
+    * `SAC/reward_function`: Type of reward function. Details about the predefined reward functions and how to define a new one can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game).
+    * `Experiment/mode`: Choose how the game will be terminated; either when a number of games, or a number of interactions is completed.
     * `SAC/discrete`: Discrete or normal SAC (Currently only the discrete SAC is compatible with the game)
   
 ### Play
 ![Game](https://github.com/ligerfotis/maze_RL_v2/blob/master/pictures/maze_tilt.png)
 
-* `Human only`: Use Left and Right arrows to control the tilt of the tray around its y-axis and use Up and Down arrows to control the tile of the tray around its x-axis as shown in the previous picture
-* `Human-Agent`: Use Left and Right arrows to control the tilt of the tray around its y-axis
-* Press once the spacekey to pause and a second time to resume
+* `Human only` Use Left and Right arrows to control the tilt of the tray around its y-axis and use Up and Down arrows to control the tile of the tray around its x-axis as shown in the previous picture
+* `Human-Agent` Use Left and Right arrows to control the tilt of the tray around its y-axis
+* Press once the space key to pause, and a second time to resume
 * Press q to exit the experiment.
 
 ## Citation

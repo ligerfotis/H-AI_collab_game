@@ -1,15 +1,30 @@
-participant_name: "fotis"
-
 game:
-    second_human: False # Instead of the RL play with a second human
-    # position of the goal on the board
-    goal: "left_down" # "left_down" "left_up" "right_down"
-    discrete: True
+  second_human: False # Instead of the RL play with a second human
+  # position of the goal on the board
+  goal: "left_down" # "left_down" "left_up" "right_down"
+  discrete_input: False # True for Discrete or False for Continuous human input
+  verbose: False # Used for logging
 
 Experiment:
-  loop: 1 # Test mode
+  ################################################################################################
+  # max_games_mode: Experiment iterates over games. Each game has a fixed max duration in seconds.
+  # max_interactions_mode: Experiment iterates over steps. Each game has a fixed max duration in seconds.
+  ################################################################################################
+  mode: max_games_mode   # Choose max_games_mode or max_interactions_mode
 
-  loop_1:
-    max_episodes: 10  # max training episodes
-    max_timesteps: 200  # max timesteps in one episode
-    action_duration: 0.2 # sec
+  max_games_mode:
+    max_games: 10  # max training games per experiment
+    max_duration: 40  # max duration per game in seconds
+    log_interval: 5  # print avg reward in the interval
+
+  max_interactions_mode:
+    total_timesteps: 3500  # Total number of interactions per game
+    max_timesteps_per_game: 40  # Max duration of an episode (in seconds). An episode ends if the ball hits the target or if we reach the time limit
+    log_interval: 5  # print avg reward in the interval
+
+GUI:
+  start_up_screen_display_duration: 2 # the time in sec the set-up screen is being displayed
+  timeout_screen_display_duration: 3  # the time in sec the timeout screen is being displayed
+  goal_screen_display_duration: 3 # the time in sec the goal screen is being displayed
+
+
