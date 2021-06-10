@@ -8,6 +8,7 @@ game:
     agent_only: False # True if playing only the RL agent (no human-in-the-loop)
     verbose: True # Used for logging
     save: True # Save models and logs
+    human_alone: False # human is playing alone
 
     # position of the goal on the board
     goal: "left_down" # "left_down" "left_up" "right_down"

@@ -7,7 +7,7 @@ A human-agent collaborative game in a [virtual environment](https://github.com/l
 * Run `source install_dependencies/install.sh`. A python virtual environment will be created and the necessary libraries will be installed. Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
 
 ### Run
-* Run `python game/maze3d_human_only_test.py game/config/config_human_test.yaml` for human-only game.
+* Run `python game/maze3d_human_only_test.py game/config/onfig_human_test.yaml <participant_name>` for human-only game.
 * Run `python game/sac_maze3d_train.py game/config/<config_sac> <participant_name>` for human-agent game.
   * Notes before training: 
      * Set the <participant_name> to the name of the participant.

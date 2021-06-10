@@ -64,7 +64,7 @@ class Maze3D:
         """
         Performs the action of the agent to the environment for action_duration time.
         Simultaneously, receives input from the user via the keyboard arrows.
-        :param action_agent: the action of the agent. make sure it is compatible
+        :param action_agent: the action of the agent. make sure it is compatible. if None human used both axes
         :param timed_out: bool variable. true if game has been timed out
         :param goal: the goal of the game
         :param action_duration: the duration of the agent's action on the game
@@ -79,7 +79,10 @@ class Maze3D:
             # get keyboard action from user
             current_duration_pause, _, human_actions = self.getKeyboard(actions)
             duration_pause += current_duration_pause
-            action = [action_agent, human_actions[1]]
+            if action_agent is not None:
+                action = [action_agent, human_actions[1]]
+            else:
+                action = human_actions
             action_list.append(action)
 
             self.board.handleKeys(action)  # apply action to the environment

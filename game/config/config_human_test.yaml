@@ -3,7 +3,10 @@ game:
   # position of the goal on the board
   goal: "left_down" # "left_down" "left_up" "right_down"
   discrete_input: False # True for Discrete or False for Continuous human input
-  verbose: False # Used for logging
+  verbose: True # Used for logging
+  save: True # Save models and logs
+  test_model: False # True if no training happens
+  human_alone: True # human is playing alone
 
 Experiment:
   ################################################################################################
@@ -16,6 +19,7 @@ Experiment:
     max_games: 10  # max training games per experiment
     max_duration: 40  # max duration per game in seconds
     log_interval: 5  # print avg reward in the interval
+    action_duration: 0.2
 
   max_interactions_mode:
     total_timesteps: 3500  # Total number of interactions per game

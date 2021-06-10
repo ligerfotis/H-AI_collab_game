@@ -32,22 +32,23 @@ class Experiment:
         # create a gradient updates scheduler
         self.scheduler = UpdatesScheduler()
 
-        # retrieve information from the config file
-        self.max_score = config['Experiment']['test_loop']['max_score']
-        self.test_model = config['game']['test_model']
+        #retrieve information from the config file
         self.goal = config["game"]["goal"]
-        self.test_interval = config['Experiment']['test_interval']
         self.mode = config['Experiment']['mode']
-        self.test_action_duration = config['Experiment']['test_loop']['action_duration']
-        self.test_max_duration = config['Experiment']['test_loop']['max_duration']
-        self.test_max_games = config['Experiment']['test_loop']['max_games']
         self.action_duration = config['Experiment'][self.mode]['action_duration']
         self.max_game_duration = config['Experiment'][self.mode]['max_duration']
         self.max_games = config['Experiment'][self.mode]['max_games']
-        self.randomness_threshold = config['Experiment'][self.mode]['stop_random_agent']
         self.log_interval = self.config['Experiment'][self.mode]['log_interval']
         self.isAgent_discrete = config['SAC']['discrete'] if 'SAC' in config.keys() else None
         self.second_human = config['game']['second_human'] if 'game' in config.keys() else None
+        if not config['game']['human_alone']:
+            self.max_score = config['Experiment']['test_loop']['max_score']
+            self.test_model = config['game']['test_model']
+            self.test_interval = config['Experiment']['test_interval']
+            self.test_action_duration = config['Experiment']['test_loop']['action_duration']
+            self.test_max_duration = config['Experiment']['test_loop']['max_duration']
+            self.test_max_games = config['Experiment']['test_loop']['max_games']
+            self.randomness_threshold = config['Experiment'][self.mode]['stop_random_agent']
 
         # fps tracking
         self.train_fps_list, self.test_fps_list, self.total_fps_list = [], [], []
@@ -262,6 +263,93 @@ class Experiment:
         # logging
         test_print_logs(mean(self.test_score_history[-10:]), mean(self.test_length_list[-10:]), best_score,
                         sum(self.test_episode_duration_list[-10:]))
+
+    def test_human_max_games_mode(self):
+        """
+        In this experiment mode the user plays a number of games ALONE.
+        Each game terminates either if  the goal is reached or if the maximum time duration of the game has passed.
+        The flow is:
+            1. training session
+            2. testing session
+            3. Go To 1
+        """
+        train_step_counter = 0
+        running_reward = 0
+        avg_length = 0
+
+        for i_game in range(1, self.max_games + 1):
+            # print("Resuming Training")
+            start_game_time = time.time()
+            prev_observation, setting_up_duration = self.env.reset()  # stores the state of the environment
+            timed_out = False  # used to check if we hit the maximum train_game_number duration
+            game_reward = 0  # keeps track of the rewards for each train_game_number
+            dist_travel = 0  # keeps track of the ball's travelled distance
+
+            print("Episode: " + str(i_game))
+
+            self.save_models = True  # flag for saving RL models
+            redundant_end_duration = setting_up_duration  # duration in the game that is not playable by the user
+
+            # 1. Training Session
+            while True:
+                train_game_start_time = time.time()
+                self.total_steps += 1
+                train_step_counter += 1  # keep track of the step number for each game
+
+                # Environment step
+                transition = self.env.step(None, timed_out, self.goal, self.action_duration)
+                observation, _, done, train_fps, duration_pause, action_list = transition
+                reward = -1
+                redundant_end_duration += duration_pause  # keep track of the total paused time
+
+                # check if the game has timed out
+                if time.time() - start_game_time - redundant_end_duration >= self.max_game_duration:
+                    timed_out = True
+
+                # keep track of the fps
+                self.train_fps_list.append(train_fps)
+                self.total_fps_list.append(train_fps)
+
+                self.action_history = self.action_history + action_list
+
+                game_reward += reward  # keep track of the total game reward
+
+                # compute travelled distance
+                dist_travel = get_distance_traveled(dist_travel, prev_observation, observation)
+
+                # calculate game duration
+                train_step_duration = time.time() - train_game_start_time - duration_pause
+                self.train_step_duration_list.append(train_step_duration)
+
+                # set the observation for the next step
+                prev_observation = observation
+
+                # the ball has either reached the goal or the game has timed out
+                if done:
+                    break
+
+            running_reward += game_reward  # total running reward. used for logging averages
+
+            # keep track of best game reward
+            self.update_best_reward(game_reward)
+
+            # keep track of total pause duration
+            end_game_time = time.time()
+            self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration)
+
+            # update metrics about the experiment
+            self.update_train_metrics(game_reward, dist_travel, train_step_counter)
+
+            # logging
+            avg_length += train_step_counter
+            train_step_counter = 0
+            avg_game_duration = np.mean(self.game_duration_list[-self.log_interval:])
+            running_reward, avg_length = print_logs(self.config["game"]["verbose"],
+                                                    self.config['game']['test_model'],
+                                                    self.total_steps, i_game, self.total_steps, running_reward,
+                                                    avg_length, self.log_interval, avg_game_duration)
+
+        tracker.print_diff()  # to track memory leaks
 
     def max_interactions_mode(self):
         pass
