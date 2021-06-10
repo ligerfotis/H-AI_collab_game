@@ -1,7 +1,7 @@
 # Maze 3D Collaborative Learning on shared task
 
 ### Description
-A human-agent collaborative game in a [virtual environment](https://github.com/ThanasisTs/maze_RL/tree/main/maze3D) based on the work of Shafti et al. (2020) [1]. Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [2] with modifications for discrete action space [3].
+A human-agent collaborative game in a [virtual environment](https://github.com/ligerfotis/maze_RL_v2/blob/master/maze3D) based on the work of Shafti et al. (2020) [1]. Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [2] with modifications for discrete action space [3].
 
 ### Installation
 * Run `source install_dependencies/install.sh`. A python virtual environment will be created and the necessary libraries will be installed. Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
