@@ -1,5 +1,3 @@
-participant_name: "test_game_number"
-
 game:
     test_model: False # no training
     checkpoint_name: "sac_20201216_17-25-51"

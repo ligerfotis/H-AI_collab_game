@@ -78,12 +78,12 @@ def plot_test_score(data, figure_file, title=None):
     # plt.show()
 
 
-def get_plot_and_chkpt_dir(config):
+def get_plot_and_chkpt_dir(config, participant_name):
     load_checkpoint, load_checkpoint_name, discrete = [config['game']['load_checkpoint'],
                                                        config['game']['checkpoint_name'], config['SAC']['discrete']]
     mode = str(config['Experiment']['mode'])
     total_number_updates = config['Experiment'][mode]['total_update_cycles']
-    participant = config['participant_name']
+    participant = participant_name
     learn_every = config['Experiment'][mode]['learn_every_n_games']
     reward_function = config['SAC']['reward_function']
     allocation = config['Experiment']['scheduling']

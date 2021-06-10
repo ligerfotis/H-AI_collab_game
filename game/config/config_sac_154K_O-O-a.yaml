@@ -1,5 +1,3 @@
-participant_name: "fotis"
-
 game:
     discrete_input: False # True for Discrete or False for Continuous human input
 
