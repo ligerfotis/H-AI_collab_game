@@ -91,7 +91,7 @@ class Experiment:
 
         # 0. Perform a testing session with random agent
         if self.config['Experiment']['start_with_testing_random_agent']:
-            self.test_max_interactions_mode(1)
+            self.test_max_games_mode(1)
             self.flag = True
 
         for i_game in range(1, self.max_games + 1):
