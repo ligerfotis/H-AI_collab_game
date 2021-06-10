@@ -80,3 +80,9 @@ Experiment:
     action_duration: 0.2 # Time duration between consecutive RL agent actions
     max_score: 200
 
+GUI:
+  start_up_screen_display_duration: 5
+  timeout_screen_display_duration: 3
+  goal_screen_display_duration: 3
+
+

@@ -151,10 +151,9 @@ class Maze3D:
 
     def reset(self):
         """
-        Resets the game
-        :return: the initial observation of the game
+        Resets the game.
+        :return: the initial observation of the game, the set-up duration
         """
-        # todo: insert her the starting graphics
         setting_up_duration = self.display_starting_screen()
         self.__init__(config=self.config)
         return self.observation, setting_up_duration
@@ -162,32 +161,32 @@ class Maze3D:
     def display_terminating_screen(self):
         """
         Displays a message to the user when the goal has been reached
+        :return: GUI display_duration
         """
-        # todo: change hard-coded duration
-
+        display_duration = self.config['GUI']['goal_screen_display_duration']
         timeStart = time.time()
         i = 0
         self.board.update()
-        while time.time() - timeStart <= 3:
+        while time.time() - timeStart <= display_duration:
             glClearDepth(1000.0)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-            self.board.draw(mode=2, idx=i) # mode: 2 for reaching goal
+            self.board.draw(mode=2, idx=i)  # mode: 2 for reaching goal
             pg.display.flip()
             time.sleep(1)
             i += 1
         self.done = True
-        return 3
+        return display_duration
 
     def display_timed_out_screen(self):
         """
         Displays a timeout message to the user
+        :return: GUI display_duration
         """
-        # todo: change hard-coded duration
-
+        display_duration = self.config['GUI']['timeout_screen_display_duration']
         timeStart = time.time()
         i = 0
         self.board.update()
-        while time.time() - timeStart <= 3:
+        while time.time() - timeStart <= display_duration:
             glClearDepth(1000.0)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             self.board.draw(mode=3, idx=i)  # mode: 3 for time out
@@ -195,21 +194,22 @@ class Maze3D:
             time.sleep(1)
             i += 1
         self.done = True
-        return 3
+        return display_duration
 
     def display_starting_screen(self):
         """
         Displays a starting countdown message to the user before the game starts
+        :return: GUI display_duration
         """
-        # todo: change hard-coded duration
+        display_duration = self.config['GUI']['start_up_screen_display_duration']
         timeStart = time.time()
         i = 0
         self.board.update()
-        while time.time() - timeStart <= 5:
+        while time.time() - timeStart <= display_duration:
             glClearDepth(1000.0)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             self.board.draw(mode=1, idx=i)
             pg.display.flip()
             time.sleep(1)
             i += 1
-        return 5
+        return display_duration

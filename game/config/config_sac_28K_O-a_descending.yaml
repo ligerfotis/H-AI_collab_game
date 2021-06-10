@@ -69,7 +69,10 @@ Experiment:
     start_training_step_on_timestep: 500 # Will not train the agent before this number of interactions occur
     learn_every_n_timesteps: 500 # # Perform offline gradient updates after every `learn_every_n_timesteps` interactions
     test_loop:
-    update_cycles: 20000 # Total number of offline gradient updates throughout the whole experiment
+    update_cycles: 20000 # Total number of offlineGUI:
+  start_up_screen_display_duration: 5
+  timeout_screen_display_duration: 3
+  goal_screen_display_duration: 3 gradient updates throughout the whole experiment
     reward_scale: 2
     log_interval: 2  # games
 
@@ -80,3 +83,7 @@ Experiment:
     action_duration: 0.2 # Time duration between consecutive RL agent actions
     max_score: 200
 
+GUI:
+  start_up_screen_display_duration: 5
+  timeout_screen_display_duration: 3
+  goal_screen_display_duration: 3
