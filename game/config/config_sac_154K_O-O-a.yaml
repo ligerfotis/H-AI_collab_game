@@ -81,6 +81,6 @@ Experiment:
     max_score: 200
 
 GUI:
-  start_up_screen_display_duration: 5
-  timeout_screen_display_duration: 3
-  goal_screen_display_duration: 3
+  start_up_screen_display_duration: 5 # the time in sec the set-up screen is being displayed
+  timeout_screen_display_duration: 3  # the time in sec the timeout screen is being displayed
+  goal_screen_display_duration: 3 # the time in sec the goal screen is being displayed

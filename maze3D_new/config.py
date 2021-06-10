@@ -91,8 +91,8 @@ BOARD = Texture("maze3D_new/textures/board_white.png")
 WALL = Texture("maze3D_new/textures/wall_simple.jpg")
 BALL = Texture("maze3D_new/textures/glass.png")
 HOLE = Texture("maze3D_new/textures/green.png")
-TEXT = [Texture("maze3D_new/textures/5_secs.png"), Texture("maze3D_new/textures/4secs.png"), Texture("maze3D_new/textures/3secs.png"),
-		Texture("maze3D_new/textures/2secs.png"), Texture("maze3D_new/textures/1secs.png"), Texture("maze3D_new/textures/play.png"), Texture("maze3D_new/textures/goal_hit.png"), Texture("maze3D_new/textures/timeout.png")]
+TEXT = [Texture("maze3D_new/textures/1secs.png"), Texture("maze3D_new/textures/2secs.png"), Texture("maze3D_new/textures/3secs.png"),
+		Texture("maze3D_new/textures/4secs.png"), Texture("maze3D_new/textures/5_secs.png"), Texture("maze3D_new/textures/play.png"), Texture("maze3D_new/textures/goal_hit.png"), Texture("maze3D_new/textures/timeout.png")]
 
 ####################################################################
 

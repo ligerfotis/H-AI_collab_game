@@ -203,13 +203,13 @@ class Maze3D:
         """
         display_duration = self.config['GUI']['start_up_screen_display_duration']
         timeStart = time.time()
-        i = 0
+        i = display_duration
         self.board.update()
-        while time.time() - timeStart <= display_duration:
+        while time.time() - timeStart <= display_duration and i > 0:
             glClearDepth(1000.0)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             self.board.draw(mode=1, idx=i)
             pg.display.flip()
             time.sleep(1)
-            i += 1
+            i -= 1
         return display_duration
