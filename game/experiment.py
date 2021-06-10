@@ -95,7 +95,7 @@ class Experiment:
             self.flag = True
 
         for i_game in range(1, self.max_games + 1):
-            print("Resuming Training")
+            # print("Resuming Training")
             start_game_time = time.time()
             prev_observation, setting_up_duration = self.env.reset()  # stores the state of the environment
             timed_out = False  # used to check if we hit the maximum train_game_number duration
@@ -188,7 +188,7 @@ class Experiment:
 
         tracker.print_diff()  # to track memory leaks
 
-    def test_max_interactions_mode(self, randomness_criterion):
+    def test_max_games_mode(self, randomness_criterion):
         """
         In this testing experiment mode the user plays a number of games.
         Each game terminates either if  the goal is reached or if the maximum time duration of the game has passed.
@@ -472,7 +472,7 @@ class Experiment:
         :param i_game: current game
         """
         if i_game % self.test_interval == 0 and self.test_max_games > 0:
-            self.test_max_interactions_mode(randomness_criterion=i_game)
+            self.test_max_games_mode(randomness_criterion=i_game)
             print("Continue Training.")
 
     def get_agent_action(self, prev_observation, randomness_criterion):
