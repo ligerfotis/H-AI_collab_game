@@ -2,7 +2,7 @@ game:
   second_human: False # Instead of the RL play with a second human
   # position of the goal on the board
   goal: "left_down" # "left_down" "left_up" "right_down"
-  discrete_input: False # True for Discrete or False for Continuous human input
+  discrete_input: True # True for Discrete or False for Continuous human input
   verbose: True # Used for logging
   save: True # Save models and logs
   test_model: False # True if no training happens

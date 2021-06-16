@@ -560,7 +560,7 @@ class Experiment:
         :param i_game: current game
         """
         if i_game % self.test_interval == 0 and self.test_max_games > 0:
-            self.test_max_games_mode(randomness_criterion=i_game)
+            self.test_max_games_mode(randomness_criterion=None)
             print("Continue Training.")
 
     def get_agent_action(self, prev_observation, randomness_criterion):

@@ -12,7 +12,7 @@ goal_offset = 24
 
 def checkTerminal(ball, goal):
     goal = goals[goal]
-    if distance.euclidean([ball.x, ball.y], goal) < 5:
+    if distance.euclidean([ball.x, ball.y], goal) < 7:
         return True
     return False
 

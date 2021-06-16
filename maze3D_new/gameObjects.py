@@ -5,6 +5,7 @@ import numpy as np
 from scipy.spatial import distance
 import time
 
+ball_diameter = 32
 
 class GameBoard:
     def __init__(self, layout, discrete=False, rl=False):
@@ -55,8 +56,7 @@ class GameBoard:
         smallest = min(xGrid, yGrid)
         if biggest > 13 or smallest < 0:
             return True, None
-        if self.walls[yGrid][xGrid] != None:
-            if self.layout[yGrid][xGrid] in [1, 6, 7]:
+        if self.walls[yGrid][xGrid] is not None:
                 return True, self.layout[yGrid][xGrid]
         return False, None
 
@@ -72,8 +72,6 @@ class GameBoard:
 
         # check that the ball moves in the obstacle-free space
         for direction in check_collision:
-            biggest = max(direction[0], direction[1])
-            smallest = min(direction[0], direction[1])
 
             # if the grid has not an object
             if self.layout[direction[1]][direction[0]] in [0, 3] and not self.slide:
@@ -317,20 +315,16 @@ class Ball:
         self.velocity[0] += 0.5 * acceleration[0]
         self.velocity[1] += 0.5 * acceleration[1]
 
-        cmd_vel_x = self.velocity[0]
-        cmd_vel_y = self.velocity[1]
-
-        # print(acceleration)
-
-        check_collision_X = self.x + self.velocity[0] + 8 * np.sign(self.velocity[0])
-        check_collision_Y = self.y + self.velocity[1] + 8 * np.sign(self.velocity[1])
-
         nextX = self.x + self.velocity[0]
         nextY = self.y + self.velocity[1]
 
+        test_nextX = nextX + ball_diameter/2 * np.sign(self.velocity[0])
+        test_nextY = nextY + ball_diameter/2 * np.sign(self.velocity[1])
+
         # check x direction
-        checkXCol, gridX = self.parent.collideSquare(check_collision_X, self.y)
-        checkYCol, gridY = self.parent.collideSquare(self.x, check_collision_Y)
+        checkXCol, gridX = self.parent.collideSquare(test_nextX, self.y)
+        checkYCol, gridY = self.parent.collideSquare(self.x, test_nextY)
+        # checkXYCol, gridXY = self.parent.collideSquare(test_nextX, test_nextY)
 
         if checkXCol:
             self.velocity[0] *= -0.25
@@ -339,17 +333,17 @@ class Ball:
         if checkYCol:
             self.velocity[1] *= -0.25
 
-        # print (self.velocity)
-        if (not checkXCol and not checkYCol) or gridX == 7 or gridY == 7:
-            velx, vely, collision = self.parent.collideTriangle(check_collision_X, check_collision_Y, nextX, nextY,
-                                                                self.velocity[0], self.velocity[1], acceleration[0],
-                                                                acceleration[1])
-            # print(velx, vely)
-            if collision:
-                self.velocity[0] *= -0.25
-                self.velocity[1] *= -0.25
-            else:
-                self.velocity = [velx, vely]
+        # # print (self.velocity)
+        # if (not checkXCol and not checkYCol) or gridX == 7 or gridY == 7:
+        #     velx, vely, collision = self.parent.collideTriangle(test_nextX, test_nextY, nextX, nextY,
+        #                                                         self.velocity[0], self.velocity[1], acceleration[0],
+        #                                                         acceleration[1])
+        #     # print(velx, vely)
+        #     if collision:
+        #         self.velocity[0] *= -0.25
+        #         self.velocity[1] *= -0.25
+        #     else:
+        #         self.velocity = [velx, vely]
 
         self.x += self.velocity[0]
         self.y += self.velocity[1]
