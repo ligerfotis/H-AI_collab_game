@@ -81,9 +81,8 @@ glEnable(GL_CULL_FACE)
 BOARD_MODEL = ObjModel("maze3D_new/models/board.obj")
 BALL_MODEL = ObjModel("maze3D_new/models/ball_32cm.obj")
 WALL_MODELS = [ObjModel("maze3D_new/models/wall_tall.obj"), ObjModel("maze3D_new/models/wall_half_1_big.obj"),
-               ObjModel("maze3D_new/models/wall_half_2_big.obj"),
-               ObjModel("maze3D_new/models/wall_half_corner_1_big.obj"),
-               ObjModel("maze3D_new/models/wall_half_corner_2_big.obj")]
+				ObjModel("maze3D_new/models/wall_half_2_big.obj"), ObjModel("maze3D_new/models/wall_half_corner_1_big_tall.obj"),
+				ObjModel("maze3D_new/models/wall_half_corner_2_big_tall.obj")]
 HOLE_MODEL = ObjModel("maze3D_new/models/hole_x2_5.obj")
 TEXT_MODEL = ObjModel("maze3D_new/models/text.obj")
 
@@ -92,11 +91,9 @@ BOARD = Texture("maze3D_new/textures/board_white.png")
 WALL = Texture("maze3D_new/textures/wall_simple.jpg")
 BALL = Texture("maze3D_new/textures/glass.png")
 HOLE = Texture("maze3D_new/textures/green.png")
-TEXT = [Texture("maze3D_new/textures/1secs.png"), Texture("maze3D_new/textures/2secs.png"),
-        Texture("maze3D_new/textures/3secs.png"),
-        Texture("maze3D_new/textures/4secs.png"), Texture("maze3D_new/textures/5_secs.png"),
-        Texture("maze3D_new/textures/play.png"), Texture("maze3D_new/textures/goal_hit.png"),
-        Texture("maze3D_new/textures/timeout.png")]
+TEXT = [Texture("maze3D_new/textures/5_secs.png"), Texture("maze3D_new/textures/4secs.png"), Texture("maze3D_new/textures/3secs.png"),
+		Texture("maze3D_new/textures/2secs.png"), Texture("maze3D_new/textures/1secs.png"), Texture("maze3D_new/textures/play.png"), Texture("maze3D_new/textures/goal_hit.png"), Texture("maze3D_new/textures/timeout.png")]
+
 
 ####################################################################
 

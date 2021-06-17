@@ -1,3 +1,5 @@
+from numpy.linalg import norm
+
 from maze3D_new.config import *
 from maze3D_new.assets import *
 import math
@@ -6,6 +8,7 @@ from scipy.spatial import distance
 import time
 
 ball_diameter = 32
+damping_factor = 0.4
 
 class GameBoard:
     def __init__(self, layout, discrete=False, rl=False):
@@ -54,143 +57,14 @@ class GameBoard:
 
         biggest = max(xGrid, yGrid)
         smallest = min(xGrid, yGrid)
-        if biggest > 13 or smallest < 0:
+        # check the perimeter walls of the tray
+        if biggest > 13 or smallest < 1:
             return True, None
-        if self.walls[yGrid][xGrid] is not None:
-                return True, self.layout[yGrid][xGrid]
+        # checks collisons with corner blocks
+        if self.walls[yGrid][xGrid] is not None and self.layout[yGrid][xGrid] == 1:
+            return True, self.layout[yGrid][xGrid]
         return False, None
 
-    def collideTriangle(self, checkX, checkY, x, y, velx, vely, accx, accy):
-        # find the grid that the ball tends to enter
-        # grid_directionX stores the coordinates of the ball in the x axis
-        # grid_directionY stores the coordinates of the ball in the y axis
-
-        grid_directionX = [math.floor((checkX + 240) / 32), math.floor((y + 240) / 32)]
-        grid_directionY = [math.floor((x + 240) / 32), math.floor((checkY + 240) / 32)]
-
-        check_collision = [grid_directionX, grid_directionY]
-
-        # check that the ball moves in the obstacle-free space
-        for direction in check_collision:
-
-            # if the grid has not an object
-            if self.layout[direction[1]][direction[0]] in [0, 3] and not self.slide:
-                return velx, vely, False
-
-        # if code reaches this point, we are at a grid of triangle obstacle
-
-        # change reference point to be down left pixel of the grid
-        xObs, yObs = 0, 0
-        xBall, yBall = x - 32 * direction[0] + 240, y - 32 * direction[1] + 240
-
-        # get the point of the ball that will hit the triangle obstacle
-        xCol4, yCol4 = x + 8 * np.cos(225 * np.pi / 180), y + 8 * np.sin(225 * np.pi / 180)
-        xGridCol4, yGridCol4 = math.floor((xCol4 + 240) / 32), math.floor((yCol4 + 240) / 32)
-        xCol5, yCol5 = x + 8 * np.cos(45 * np.pi / 180), y + 8 * np.sin(45 * np.pi / 180)
-        xGridCol5, yGridCol5 = math.floor((xCol5 + 240) / 32), math.floor((yCol5 + 240) / 32)
-
-        if self.layout[yGridCol4][xGridCol4] == 4 or self.layout[yGridCol4][xGridCol4] == 6:
-
-            # collision angle
-            theta = 225 * np.pi / 180
-            xCol, yCol = xBall + 8 * np.cos(theta), yBall + 8 * np.sin(theta)
-            thetaCol = np.arctan((yCol - yObs) / (xCol - 32 - xObs)) * 180 / np.pi
-
-            # print(self.layout[yGridCol4][xGridCol4])
-            # print(thetaCol)
-            if self.layout[yGridCol4][xGridCol4] == 6:
-                thetaCol = 135
-            else:
-                thetaCol += 180
-
-            # if thetaCol is less than 135 degrees, reset the slide counter and the slide flag
-            # and return the commanded velocities
-            if thetaCol < 135:
-                self.count_slide = 0
-                self.slide = False
-                self.slide_velx, self.slide_vely = 0, 0
-                return velx, vely, False
-            # if thetaCol is greater than 135 degrees, then the ball hit the triangle
-            elif thetaCol >= 135:
-                # if collision angle is greater than 135 degrees 3 consecutive times, 
-                # then we assume that the ball touches the leaning surface. Otherwise, the ball
-                # will bounce 
-                if self.count_slide == 3:
-                    self.slide = True
-                elif not self.slide:
-                    self.slide = False
-                    self.count_slide += 1
-                    if velx <= 0 and vely <= 0:
-                        return 0.25 * abs(vely), 0.25 * abs(velx), False
-                    return 0.25 * np.sign(velx) * abs(vely), 0.25 * np.sign(vely) * abs(velx), False
-
-                if self.slide:
-                    if accx > 0 and accy < 0:
-                        self.slide_velx = self.slide_velx + accx + abs(accy) * np.sin(np.pi / 4) ** 2
-                        self.slide_vely += accy * np.sin(np.pi / 4) ** 2
-                    elif accx < 0 and accy > 0:
-                        self.slide_velx += accx * np.sin(np.pi / 4) ** 2
-                        self.slide_vely = self.slide_vely + accy + abs(accx) * np.sin(np.pi / 4) ** 2
-                    elif accx > 0 and accy > 0:
-                        self.slide_velx += accx
-                        self.slide_vely += accy
-                    else:
-                        self.slide_velx = self.slide_velx + abs(accy) * np.sin(np.pi / 4) ** 2 + accx * np.sin(
-                            np.pi / 4) ** 2
-                        self.slide_vely = self.slide_vely + abs(accx) * np.sin(np.pi / 4) ** 2 + accy * np.sin(
-                            np.pi / 4) ** 2
-                    return self.slide_velx, self.slide_vely, False
-
-
-        # right triangle
-        elif self.layout[yGridCol5][xGridCol5] == 5 or self.layout[yGridCol5][xGridCol5] == 6:
-            # collision angle
-            theta = 45 * np.pi / 180
-            xCol, yCol = xBall + 8 * np.cos(theta), yBall + 8 * np.sin(theta)
-            thetaCol = np.arctan((yCol - yObs) / (xCol - 32 - xObs)) * 180 / np.pi
-
-            if self.layout[yGridCol5][xGridCol5] == 6:
-                thetaCol = 135
-            else:
-                thetaCol += 180
-
-            # if thetaCol is greater than 135 degrees, reset the slide counter and the slide flag
-            # and return the commanded velocities
-            if thetaCol > 135:
-                self.count_slide = 0
-                self.slide = False
-                self.slide_velx, self.slide_vely = 0, 0
-                return velx, vely, False
-            # if thetaCol is less than 135 degrees, then the ball hit the triangle
-            elif thetaCol <= 135:
-                self.count_slide += 1
-                # if collision angle is greater than 135 degrees 3 consecutive times, 
-                # then we assume that the ball touches the leaning surface.
-                # Otherwise, the ball will bounce 
-                if self.count_slide == 3:
-                    self.slide = True
-                elif not self.slide:
-                    if velx >= 0 and vely >= 0:
-                        return -0.25 * vely, -0.25 * velx, False
-                    return 0.25 * np.sign(velx) * abs(vely), 0.25 * np.sign(vely) * abs(velx), False
-                if self.slide:
-                    if accx > 0 and accy < 0:
-                        self.slide_velx += accx * np.sin(np.pi / 4) ** 2
-                        self.slide_vely = self.slide_vely + accy - accx * np.sin(np.pi / 4) ** 2
-                    elif accx < 0 and accy > 0:
-                        self.slide_velx = self.slide_velx + accx - accy * np.sin(np.pi / 4) ** 2
-                        self.slide_vely += accy * np.sin(np.pi / 4) ** 2
-                    elif accx < 0 and accy < 0:
-                        self.slide_velx += accx
-                        self.slide_vely += accy
-                    else:
-                        self.slide_velx = self.slide_velx - accy * np.sin(np.pi / 4) ** 2 + accx * np.sin(
-                            np.pi / 4) ** 2
-                        self.slide_vely = self.slide_vely - accx * np.sin(np.pi / 4) ** 2 + accy * np.sin(
-                            np.pi / 4) ** 2
-
-                    return self.slide_velx, self.slide_vely, False
-        return velx, vely, False
 
     def update(self):
         # compute rotation matrix
@@ -298,8 +172,20 @@ class Wall:
         glDrawArrays(GL_TRIANGLES, 0, WALL_MODELS[self.type].getVertexCount())
 
 
+def compute_angle(nextX, nextY):
+    if nextX >= 0:
+        return np.arctan(nextY / nextX) * 180 / np.pi
+    else:
+        return 180 + np.arctan(nextY / nextX) * 180 / np.pi
+
+
+def distance_from_line(p2, p1, p0):
+    return  norm(np.cross(p2 - p1, p1 - p0)) / norm(p2 - p1)
+
+
 class Ball:
     def __init__(self, x, y, parent):
+        self.exception = True
         self.parent = parent
         self.x = x
         self.y = y
@@ -311,39 +197,37 @@ class Ball:
         translation = pyrr.matrix44.create_from_translation(pyrr.Vector3([self.x, self.y, self.z]))
         self.model = pyrr.matrix44.multiply(translation, self.parent.rotationMatrix)
 
+        # print([self.x, self.y])
         acceleration = [-0.1 * self.parent.rot_y, 0.1 * self.parent.rot_x]
-        self.velocity[0] += 0.5 * acceleration[0]
-        self.velocity[1] += 0.5 * acceleration[1]
+        self.velocity[0] += 1.2 * acceleration[0]
+        self.velocity[1] += 1.2 * acceleration[1]
 
         nextX = self.x + self.velocity[0]
         nextY = self.y + self.velocity[1]
 
-        test_nextX = nextX + ball_diameter/2 * np.sign(self.velocity[0])
-        test_nextY = nextY + ball_diameter/2 * np.sign(self.velocity[1])
+        test_nextX = nextX + ball_diameter / 2 * np.sign(self.velocity[0])
+        test_nextY = nextY + ball_diameter / 2 * np.sign(self.velocity[1])
 
         # check x direction
         checkXCol, gridX = self.parent.collideSquare(test_nextX, self.y)
         checkYCol, gridY = self.parent.collideSquare(self.x, test_nextY)
-        # checkXYCol, gridXY = self.parent.collideSquare(test_nextX, test_nextY)
 
         if checkXCol:
             self.velocity[0] *= -0.25
 
         # check y direction
-        if checkYCol:
+        elif checkYCol:
             self.velocity[1] *= -0.25
 
-        # # print (self.velocity)
-        # if (not checkXCol and not checkYCol) or gridX == 7 or gridY == 7:
-        #     velx, vely, collision = self.parent.collideTriangle(test_nextX, test_nextY, nextX, nextY,
-        #                                                         self.velocity[0], self.velocity[1], acceleration[0],
-        #                                                         acceleration[1])
-        #     # print(velx, vely)
-        #     if collision:
-        #         self.velocity[0] *= -0.25
-        #         self.velocity[1] *= -0.25
-        #     else:
-        #         self.velocity = [velx, vely]
+        else:
+            angle_from_center = compute_angle(nextX, nextY)
+
+            # check if in the upper diagonal barrier
+            if -45 <= angle_from_center <= 135:
+                # if ball is in the upper triangle of the tray
+                self.slide_on_upper_triangle(nextX, nextY, test_nextX, test_nextY)
+            elif 135 < angle_from_center <= 180 or angle_from_center <= -45:
+                self.slide_on_lower_triangle(nextX, nextY, test_nextX, test_nextY)
 
         self.x += self.velocity[0]
         self.y += self.velocity[1]
@@ -353,6 +237,89 @@ class Ball:
         glBindVertexArray(BALL_MODEL.getVAO())
         glBindTexture(GL_TEXTURE_2D, BALL.getTexture())
         glDrawArrays(GL_TRIANGLES, 0, BALL_MODEL.getVertexCount())
+
+    def slide_on_upper_triangle(self, nextX, nextY, test_nextX, test_nextY):
+        # distance of a point (ball's edge towards the move direction) from a line
+        p1 = np.asarray([0, 32])
+        p2 = np.asarray([32, 0])
+        d = norm(np.cross(p2 - p1, p1 - [nextX, nextY])) / norm(p2 - p1)
+        if d <= ball_diameter / 2:
+            # check if there is an opening
+            # print([test_nextX, test_nextY])
+            if -16 <= test_nextX <= 48 and -16 <= test_nextY <= 48:
+                pass
+            elif 16 <= test_nextX <= 48 and test_nextY <= -16:
+                if self.velocity[1] <= 0:
+                    # bounce on the x axis
+                    self.velocity[0] *= damping_factor
+                    # keep going on the y axis
+                    self.velocity[1] *= -1 * damping_factor
+            elif test_nextX <= -16 and 16 <= test_nextY <= 48:
+                if self.velocity[0] <= 0:
+                    # bounce on the x axis
+                    self.velocity[0] *= -1 * damping_factor
+                    # keep going on the y axis
+                    self.velocity[1] *= damping_factor
+            else:
+                if self.velocity[0] > 0 and self.velocity[1] < 0:
+                    # bounce on the x axis
+                    self.velocity[0] = self.velocity[0] + damping_factor * abs(self.velocity[1]) * np.cos(np.pi / 4)
+                    # keep going on the y axis
+                    self.velocity[1] *= np.sin(np.pi / 4) ** 2
+                # go to down right
+                elif self.velocity[0] <= 0 and self.velocity[1] <= 0:
+                    # keep going on the x axis
+                    self.velocity[0] *= -damping_factor
+                    # bounce on the y axis
+                    self.velocity[1] *= -damping_factor
+                # go up
+                elif self.velocity[0] <= 0 and self.velocity[1] >= 0:
+                    # keep going on the x axis
+                    self.velocity[0] *= np.sin(np.pi / 4) ** 2
+                    # bounce on the y axis
+                    self.velocity[1] = self.velocity[1] + damping_factor * abs(self.velocity[0]) * np.cos(np.pi / 4)
+
+    def slide_on_lower_triangle(self, nextX, nextY, test_nextX, test_nextY):
+        # distance of a point (ball's edge towards the move direction) from a line
+        p1 = np.asarray([0, -32])
+        p2 = np.asarray([-32, 0])
+        d = distance_from_line(p2, p1, [nextX, nextY])
+        if d <= ball_diameter / 2:
+            # check if there is an opening
+            # print([test_nextX, test_nextY])
+            if -48 <= test_nextX <= 16 and -48 <= test_nextY <= 16:
+                pass
+            elif 16 <= test_nextX and -48 <= test_nextY <= 16:
+                if self.velocity[0] >= 0:
+                    # bounce on the x axis
+                    self.velocity[0] *= -1 * damping_factor
+                    # keep going on the y axis
+                    self.velocity[1] *= damping_factor
+            elif -48 <= test_nextX <= -16 and 16 <= test_nextY:
+                if self.velocity[1] >= 0:
+                    # bounce on the x axis
+                    self.velocity[0] *= damping_factor
+                    # keep going on the y axis
+                    self.velocity[1] *= -damping_factor
+            else:
+                if self.velocity[0] < 0 and self.velocity[1] > 0:
+                    # bounce on the x axis
+                    self.velocity[0] = self.velocity[0] + damping_factor * abs(self.velocity[1]) * np.cos(np.pi / 4)
+                    # keep going on the y axis
+                    self.velocity[1] *= np.sin(np.pi / 4) ** 2
+                # go to down right
+                elif self.velocity[0] >= 0 and self.velocity[1] >= 0:
+                    # if in the open space of the frontier
+                        # keep going on the x axis
+                        self.velocity[0] *= -damping_factor
+                        # bounce on the y axis
+                        self.velocity[1] *= -damping_factor
+                # go up
+                elif self.velocity[0] >= 0 and self.velocity[1] <= 0:
+                    # keep going on the x axis
+                    self.velocity[0] *= np.sin(np.pi / 4) ** 2
+                    # bounce on the y axis
+                    self.velocity[1] = self.velocity[1] + damping_factor * abs(self.velocity[0]) * np.cos(np.pi / 4)
 
 
 class Hole:

@@ -10,8 +10,8 @@ from maze3D_new.layouts import layout_up_right, layout_down_right, layout_up_lef
 from plot_utils.plot_utils import get_config
 
 # the game layouts
-layouts = [layout_down_right, layout_up_left, layout_up_right]
-# layouts = [layout_up_right]
+# layouts = [layout_down_right, layout_up_left, layout_up_right]
+layouts = [layout_up_right]
 
 
 class ActionSpace:
