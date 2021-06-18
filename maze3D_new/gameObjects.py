@@ -8,7 +8,7 @@ from scipy.spatial import distance
 import time
 
 ball_diameter = 32
-damping_factor = 0.2
+damping_factor = 0.4
 
 class GameBoard:
     def __init__(self, layout, discrete=False, rl=False):
@@ -199,8 +199,8 @@ class Ball:
 
         # print([self.x, self.y])
         acceleration = [-0.1 * self.parent.rot_y, 0.1 * self.parent.rot_x]
-        self.velocity[0] += 1.2 * acceleration[0]
-        self.velocity[1] += 1.2 * acceleration[1]
+        self.velocity[0] += 1.5 * acceleration[0]
+        self.velocity[1] += 1.5 * acceleration[1]
 
         nextX = self.x + self.velocity[0]
         nextY = self.y + self.velocity[1]
@@ -225,9 +225,9 @@ class Ball:
             # check if in the upper diagonal barrier
             if -45 <= angle_from_center <= 135:
                 # if ball is in the upper triangle of the tray
-                self.slide_on_upper_triangle(nextX, nextY, test_nextX, test_nextY)
+                self.slide_on_upper_triangle(nextX, nextY, angle_from_center)
             elif 135 < angle_from_center <= 180 or angle_from_center <= -45:
-                self.slide_on_lower_triangle(nextX, nextY, test_nextX, test_nextY)
+                self.slide_on_lower_triangle(nextX, nextY, angle_from_center)
 
         self.x += self.velocity[0]
         self.y += self.velocity[1]
@@ -238,36 +238,40 @@ class Ball:
         glBindTexture(GL_TEXTURE_2D, BALL.getTexture())
         glDrawArrays(GL_TRIANGLES, 0, BALL_MODEL.getVertexCount())
 
-    def slide_on_upper_triangle(self, nextX, nextY, test_nextX, test_nextY):
+    def slide_on_upper_triangle(self, nextX, nextY, theta):
         # distance of a point (ball's edge towards the move direction) from a line
         p1 = np.asarray([0, 32])
         p2 = np.asarray([32, 0])
         d = norm(np.cross(p2 - p1, p1 - [nextX, nextY])) / norm(p2 - p1)
+
         if d <= ball_diameter / 2:
             # check if there is an opening
             # print([test_nextX, test_nextY])
             if -16 <= nextX - ball_diameter/2 and -16 <= nextY - ball_diameter/2:
                 pass
             # block 2
-            elif 16 <= nextX <= 48 and nextY - ball_diameter/2 < -16:
+            elif nextX <= 48 and nextY - ball_diameter/2 < -16:
                 if self.velocity[1] < 0:
                     # bounce on the x axis
-                    self.velocity[0] *= damping_factor
+                    self.velocity[0] = damping_factor * (self.velocity[0] + self.velocity[1] * np.sin(theta * np.pi / 180))
                     # keep going on the y axis
                     self.velocity[1] *= -1 * damping_factor
             # block 1
-            elif nextX - ball_diameter/2 < -16 and 16 <= nextY <= 48:
+            elif nextX - ball_diameter/2 < -16 and nextY <= 48:
                 if self.velocity[0] < 0:
                     # bounce on the x axis
                     self.velocity[0] *= -1 * damping_factor
                     # keep going on the y axis
-                    self.velocity[1] *= damping_factor
+                    self.velocity[1] = damping_factor * (self.velocity[1] + abs(self.velocity[0]) * np.sin(theta * np.pi / 180))
             else:
                 if self.velocity[0] > 0 and self.velocity[1] < 0:
                     # bounce on the x axis
-                    self.velocity[0] = self.velocity[0] + damping_factor * abs(self.velocity[1]) * np.cos(np.pi / 4)
+                    if theta > 90:
+                        self.velocity[0] = self.velocity[0] + abs(self.velocity[1]) * np.sin(theta * np.pi / 180)
+                    else:
+                        self.velocity[0] = self.velocity[0] + self.velocity[1] * np.sin(theta * np.pi / 180)
                     # keep going on the y axis
-                    self.velocity[1] *= np.sin(np.pi / 4) ** 2
+                    self.velocity[1] *= damping_factor * np.sin(theta * np.pi / 180)
                 # go to down right
                 elif self.velocity[0] <= 0 and self.velocity[1] <= 0:
                     # keep going on the x axis
@@ -277,15 +281,16 @@ class Ball:
                 # go up
                 elif self.velocity[0] <= 0 and self.velocity[1] >= 0:
                     # keep going on the x axis
-                    self.velocity[0] *= np.sin(np.pi / 4) ** 2
+                    self.velocity[0] *= damping_factor * np.sin(theta * np.pi / 180)
                     # bounce on the y axis
-                    self.velocity[1] = self.velocity[1] + damping_factor * abs(self.velocity[0]) * np.cos(np.pi / 4)
+                    self.velocity[1] = self.velocity[1] + damping_factor * abs(self.velocity[0]) * np.sin(np.pi / 4)
 
-    def slide_on_lower_triangle(self, nextX, nextY, test_nextX, test_nextY):
+    def slide_on_lower_triangle(self, nextX, nextY, theta):
         # define the line that the ball must not pass to insert in the frontier
         p1, p2 = np.asarray([0, -32]), np.asarray([-32, 0])
         # distance of a point (ball's edge towards the move direction) from a line
         d = distance_from_line(p2, p1, [nextX, nextY])
+
         # check if the ball's next center position closer than the ball's radius to the frontier line
         if d <= ball_diameter / 2:
             # check if there is an opening
@@ -293,38 +298,51 @@ class Ball:
             if nextX + ball_diameter/2 <= 16 and nextY + ball_diameter/2 <= 16:
                 pass
             # block 2
-            elif 16 < nextX + ball_diameter/2 and -48 <= nextY <= -16:
+            elif 16 < nextX + ball_diameter/2 and -48 <= nextY:
                 if self.velocity[0] > 0:
+                    # # bounce on the x axis
+                    # self.velocity[0] *= -1 * damping_factor
+                    # # keep going on the y axis
+                    # self.velocity[1] *= damping_factor
                     # bounce on the x axis
                     self.velocity[0] *= -1 * damping_factor
                     # keep going on the y axis
-                    self.velocity[1] *= damping_factor
+                    self.velocity[1] = damping_factor * (self.velocity[1] + self.velocity[0] * np.sin(theta * np.pi / 180))
             # block 1
-            elif -48 <= nextX <= -16 and 16 < nextY + ball_diameter/2:
+            elif -48 <= nextX and 16 < nextY + ball_diameter/2:
                 if self.velocity[1] > 0:
+                    # # bounce on the x axis
+                    # self.velocity[0] *= damping_factor
+                    # # keep going on the y axis
+                    # self.velocity[1] *= -damping_factor
                     # bounce on the x axis
-                    self.velocity[0] *= damping_factor
+                    self.velocity[0] = damping_factor * (self.velocity[0] + abs(self.velocity[1]) * np.sin(theta * np.pi / 180))
                     # keep going on the y axis
-                    self.velocity[1] *= -damping_factor
+                    self.velocity[1] *= -1 * damping_factor
+
             else:
                 if self.velocity[0] < 0 and self.velocity[1] > 0:
                     # bounce on the x axis
-                    self.velocity[0] = self.velocity[0] + damping_factor * abs(self.velocity[1]) * np.cos(np.pi / 4)
+                    self.velocity[0] = self.velocity[0] + damping_factor * abs(self.velocity[1]) * np.sin(theta * np.pi / 180)
                     # keep going on the y axis
-                    self.velocity[1] *= np.sin(np.pi / 4) ** 2
+                    self.velocity[1] *= damping_factor * np.sin(theta * np.pi / 180)
                 # go to down right
                 elif self.velocity[0] >= 0 and self.velocity[1] >= 0:
-                    # if in the open space of the frontier
-                        # keep going on the x axis
-                        self.velocity[0] *= -damping_factor
-                        # bounce on the y axis
-                        self.velocity[1] *= -damping_factor
+                    # check if sliding
+                    # if self.count_down >= 3:
+                    #     self.velocity[0] = self.velocity[0] + abs(self.velocity[1]) * np.sin(theta * np.pi / 180)
+                    #     self.velocity[1] = self.velocity[1] * np.sin(theta * np.pi / 180) ** 2
+                    # else:
+                    # keep going on the x axis
+                    self.velocity[0] *= -damping_factor
+                    # bounce on the y axis
+                    self.velocity[1] *= -damping_factor
                 # go up
                 elif self.velocity[0] >= 0 and self.velocity[1] <= 0:
                     # keep going on the x axis
-                    self.velocity[0] *= np.sin(np.pi / 4) ** 2
+                    self.velocity[0] *= damping_factor * np.sin(theta * np.pi / 180)
                     # bounce on the y axis
-                    self.velocity[1] = self.velocity[1] + damping_factor * abs(self.velocity[0]) * np.cos(np.pi / 4)
+                    self.velocity[1] = self.velocity[1] + damping_factor * abs(self.velocity[0]) * np.sin(theta * np.pi / 180)
 
 
 class Hole:
