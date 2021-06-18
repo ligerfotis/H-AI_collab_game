@@ -8,7 +8,7 @@ from scipy.spatial import distance
 import time
 
 ball_diameter = 32
-damping_factor = 0.4
+damping_factor = 0.2
 
 class GameBoard:
     def __init__(self, layout, discrete=False, rl=False):
@@ -246,16 +246,18 @@ class Ball:
         if d <= ball_diameter / 2:
             # check if there is an opening
             # print([test_nextX, test_nextY])
-            if -16 <= test_nextX <= 48 and -16 <= test_nextY <= 48:
+            if -16 <= nextX - ball_diameter/2 and -16 <= nextY - ball_diameter/2:
                 pass
-            elif 16 <= test_nextX <= 48 and test_nextY <= -16:
-                if self.velocity[1] <= 0:
+            # block 2
+            elif 16 <= nextX <= 48 and nextY - ball_diameter/2 < -16:
+                if self.velocity[1] < 0:
                     # bounce on the x axis
                     self.velocity[0] *= damping_factor
                     # keep going on the y axis
                     self.velocity[1] *= -1 * damping_factor
-            elif test_nextX <= -16 and 16 <= test_nextY <= 48:
-                if self.velocity[0] <= 0:
+            # block 1
+            elif nextX - ball_diameter/2 < -16 and 16 <= nextY <= 48:
+                if self.velocity[0] < 0:
                     # bounce on the x axis
                     self.velocity[0] *= -1 * damping_factor
                     # keep going on the y axis
@@ -280,23 +282,26 @@ class Ball:
                     self.velocity[1] = self.velocity[1] + damping_factor * abs(self.velocity[0]) * np.cos(np.pi / 4)
 
     def slide_on_lower_triangle(self, nextX, nextY, test_nextX, test_nextY):
+        # define the line that the ball must not pass to insert in the frontier
+        p1, p2 = np.asarray([0, -32]), np.asarray([-32, 0])
         # distance of a point (ball's edge towards the move direction) from a line
-        p1 = np.asarray([0, -32])
-        p2 = np.asarray([-32, 0])
         d = distance_from_line(p2, p1, [nextX, nextY])
+        # check if the ball's next center position closer than the ball's radius to the frontier line
         if d <= ball_diameter / 2:
             # check if there is an opening
             # print([test_nextX, test_nextY])
-            if -48 <= test_nextX <= 16 and -48 <= test_nextY <= 16:
+            if nextX + ball_diameter/2 <= 16 and nextY + ball_diameter/2 <= 16:
                 pass
-            elif 16 <= test_nextX and -48 <= test_nextY <= 16:
-                if self.velocity[0] >= 0:
+            # block 2
+            elif 16 < nextX + ball_diameter/2 and -48 <= nextY <= -16:
+                if self.velocity[0] > 0:
                     # bounce on the x axis
                     self.velocity[0] *= -1 * damping_factor
                     # keep going on the y axis
                     self.velocity[1] *= damping_factor
-            elif -48 <= test_nextX <= -16 and 16 <= test_nextY:
-                if self.velocity[1] >= 0:
+            # block 1
+            elif -48 <= nextX <= -16 and 16 < nextY + ball_diameter/2:
+                if self.velocity[1] > 0:
                     # bounce on the x axis
                     self.velocity[0] *= damping_factor
                     # keep going on the y axis
