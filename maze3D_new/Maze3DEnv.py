@@ -10,8 +10,8 @@ from maze3D_new.layouts import layout_up_right, layout_down_right, layout_up_lef
 from plot_utils.plot_utils import get_config
 
 # the game layouts
-# layouts = [layout_down_right, layout_up_left, layout_up_right]
-layouts = [layout_up_right]
+layouts = [layout_down_right, layout_up_left, layout_up_right]
+# layouts = [layout_up_right]
 
 
 class ActionSpace:
@@ -206,14 +206,11 @@ class Maze3D:
         :return: GUI display_duration
         """
         display_duration = self.config['GUI']['start_up_screen_display_duration']
-        timeStart = time.time()
-        i = display_duration
         self.board.update()
-        while time.time() - timeStart <= display_duration and i > 0:
+        for i in range(display_duration + 1, -1, -1): # plus 1 for the play screen
             glClearDepth(1000.0)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             self.board.draw(mode=1, idx=i)
             pg.display.flip()
             time.sleep(1)
-            i -= 1
         return display_duration
