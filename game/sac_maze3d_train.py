@@ -30,7 +30,7 @@ def main(argv):
     chkpt_dir, load_checkpoint_name, plot_dir = [None, None, None]
     if config["game"]["save"]:
         # create the checkpoint and plot directories for this experiment
-        chkpt_dir, plot_dir, load_checkpoint_name = get_plot_and_chkpt_dir(config, argv[1])
+        chkpt_dir, plot_dir, load_checkpoint_name = get_plot_and_chkpt_dir(config, argv[1], argv[0])
 
     # create the SAC agent
     sac = get_sac_agent(config, maze, chkpt_dir)

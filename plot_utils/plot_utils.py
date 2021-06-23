@@ -78,7 +78,7 @@ def plot_test_score(data, figure_file, title=None):
     # plt.show()
 
 
-def get_plot_and_chkpt_dir(config, participant_name):
+def get_plot_and_chkpt_dir(config, participant_name, config_file_name):
     load_checkpoint, load_checkpoint_name, discrete = [config['game']['load_checkpoint'],
                                                        config['game']['checkpoint_name'], config['SAC']['discrete']]
     mode = str(config['Experiment']['mode'])
@@ -116,7 +116,7 @@ def get_plot_and_chkpt_dir(config, participant_name):
         os.makedirs(plot_dir + '_' + str(j))
         plot_dir = plot_dir + '_' + str(j)
 
-        shutil.copy('game/config/config_sac.yaml', chkpt_dir)
+        shutil.copy(config_file_name, chkpt_dir)
     else:
         print("Loading Model from checkpoint {}".format(load_checkpoint_name))
         chkpt_dir = load_checkpoint_name
