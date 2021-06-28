@@ -12,7 +12,7 @@ from game.game_utils import get_env_action, get_distance_traveled, get_row_to_st
 # Offline Gradient Updates Scheduler
 from game.updates_scheduler import UpdatesScheduler
 # Virtual environment
-from maze3D_new.assets import *
+# from maze3D_new.assets import *
 
 # to track memory leaks
 from pympler.tracker import SummaryTracker

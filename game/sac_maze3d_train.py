@@ -1,7 +1,7 @@
 # Virtual environment
-from maze3D_new.Maze3DEnv import Maze3D as Maze3D_v2
-from maze3D_new.assets import *
-from maze3D_new.utils import save_logs_and_plot
+from maze3D_new.Maze3DEnvRemote import Maze3D as Maze3D_v2
+# from maze3D_new.assets import *
+# from maze3D_new.utils import save_logs_and_plot
 
 # Experiment
 from experiment import Experiment

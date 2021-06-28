@@ -11,6 +11,8 @@ from plot_utils.plot_utils import get_config
 
 # the game layouts
 layouts = [layout_down_right, layout_up_left, layout_up_right]
+
+
 # layouts = [layout_up_right]
 
 
@@ -106,6 +108,12 @@ class Maze3D:
                 self.done = True
             duration_pause += extra_time
         reward = rewards.reward_function_maze(self.done, timed_out, ball=self.board.ball, goal=goal)
+        print("self.observation", self.observation)
+        print("reward", reward)
+        print("self.done", self.done)
+        print("fps", fps)
+        print("duration_pause", duration_pause)
+        print("action_list", action_list)
         return self.observation, reward, self.done, fps, duration_pause, action_list
 
     def getKeyboard(self, actions):
@@ -207,7 +215,7 @@ class Maze3D:
         """
         display_duration = self.config['GUI']['start_up_screen_display_duration']
         self.board.update()
-        for i in range(display_duration + 1, -1, -1): # plus 1 for the play screen
+        for i in range(display_duration + 1, -1, -1):  # plus 1 for the play screen
             glClearDepth(1000.0)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             self.board.draw(mode=1, idx=i)

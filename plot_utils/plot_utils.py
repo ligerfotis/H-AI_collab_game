@@ -12,6 +12,7 @@ from pip._vendor.distlib._backport import shutil
 
 def get_config(config_file='config_sac.yaml'):
     try:
+        print(config_file)
         with open(config_file) as file:
             yaml_data = yaml.safe_load(file)
     except Exception as e:
