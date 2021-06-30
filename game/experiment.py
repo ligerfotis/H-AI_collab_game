@@ -16,6 +16,7 @@ from game.updates_scheduler import UpdatesScheduler
 
 # to track memory leaks
 from pympler.tracker import SummaryTracker
+
 tracker = SummaryTracker()
 
 
@@ -32,7 +33,7 @@ class Experiment:
         # create a gradient updates scheduler
         self.scheduler = UpdatesScheduler()
 
-        #retrieve information from the config file
+        # retrieve information from the config file
         self.goal = config["game"]["goal"]
         self.mode = config['Experiment']['mode']
         self.action_duration = config['Experiment'][self.mode]['action_duration']
@@ -172,7 +173,7 @@ class Experiment:
             # update metrics about the experiment
             self.update_train_metrics(game_reward, dist_travel, train_step_counter)
 
-            # 2. Offline gradient updates session
+            # 2. Offline gradient updates session | Training
             self.offline_grad_updates_session(i_game)
 
             # 3. Testing Games Session
@@ -391,11 +392,13 @@ class Experiment:
         """
         start_grad_updates = time.time()
         end_grad_updates = 0
+        misc_duration = 0
+
         # we play with the RL agent
         if not self.second_human:
             print("Performing {} updates".format(update_cycles))
             # print a completion bar in the terminal
-            for _ in tqdm(range(update_cycles)):
+            for cycle_i in tqdm(range(update_cycles)):
                 if self.isAgent_discrete:
                     # train the agent's networks
                     self.agent.learn()
@@ -405,9 +408,15 @@ class Experiment:
                 else:
                     # train the agent's networks
                     self.agent.learn()
+                # send info to unity
+                start = time.time()
+                if cycle_i % int(update_cycles / 100) == 0:
+                    self.env.training(cycle_i, update_cycles)
+                misc_duration += time.time() - start
+
             end_grad_updates = time.time()
 
-        return end_grad_updates - start_grad_updates
+        return end_grad_updates - start_grad_updates - misc_duration
 
     def compute_agent_action(self, observation, randomness_criterion=None, randomness_threshold=None):
         """

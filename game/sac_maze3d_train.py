@@ -7,7 +7,7 @@ from maze3D_new.Maze3DEnvRemote import Maze3D as Maze3D_v2
 from experiment import Experiment
 
 # RL modules
-from plot_utils.plot_utils import get_config, get_plot_and_chkpt_dir
+from plot_utils.plot_utils import get_config, get_plot_and_chkpt_dir, save_logs_and_plot
 from rl_models.utils import get_sac_agent
 
 import sys

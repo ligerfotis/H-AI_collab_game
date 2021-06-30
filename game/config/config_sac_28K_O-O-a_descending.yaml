@@ -35,7 +35,7 @@ SAC:
 Experiment:
   start_with_testing_random_agent: False # True to start experiment with testing human with random agent
   online_updates: True # True if a single gradient update happens after every state transition
-  test_interval: 10
+  test_interval: 2
 
   # offline gradient updates allocation
   # Normal: allocates evenly the total number of updates through each session
@@ -49,20 +49,20 @@ Experiment:
   mode: max_games_mode   # Choose max_games_mode or max_interactions_mode
 
   max_games_mode:
-    max_games: 70  # max training games per experiment
-    max_duration: 40  # max duration per game in seconds
+    max_games: 10  # max training games per experiment
+    max_duration: 2 # max duration per game in seconds
     buffer_memory_size: 1000000
     action_duration: 0.2 # Time duration in sec between consecutive RL agent actions
-    start_training_step_on_game: 10 # will not train the agent before this trial
-    stop_random_agent: 10 # stops using random agent on this trial and start using SAC
-    learn_every_n_games: 10 # Perform offline gradient updates after every `learn_every_n_games` episodes
-    total_update_cycles: 50000 # Total number of offline gradient updates throughout the whole experiment
+    start_training_step_on_game: 2 # will not train the agent before this trial
+    stop_random_agent: 2 # stops using random agent on this trial and start using SAC
+    learn_every_n_games: 2 # Perform offline gradient updates after every `learn_every_n_games` episodes
+    total_update_cycles: 5000 # Total number of offline gradient updates throughout the whole experiment
     reward_scale: 2
-    log_interval: 10  # print avg reward in the interval
+    log_interval: 2  # print avg reward in the interval
 
   max_interactions_mode:
     total_timesteps: 3500  # Total number of interactions per game
-    max_timesteps_per_game: 40  # Max duration of an episode (in seconds). An episode ends if the ball hits the target or if we reach the time limit
+    max_timesteps_per_game: 1  # Max duration of an episode (in seconds). An episode ends if the ball hits the target or if we reach the time limit
     buffer_memory_size: 1000
     action_duration: 0.2 # Time duration between consecutive RL agent actions
     start_training_step_on_timestep: 500 # Will not train the agent before this number of interactions occur
@@ -74,8 +74,8 @@ Experiment:
 
   # Test the agent during training
   test_loop:
-    max_games: 10 # total test games during each test session
-    max_duration: 40 # max duration per test game in seconds
+    max_games: 2 # total test games during each test session
+    max_duration: 2 # max duration per test game in seconds
     action_duration: 0.2 # Time duration between consecutive RL agent actions
     max_score: 200
 

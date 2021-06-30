@@ -1,11 +1,7 @@
 import random
 import socket
-import time
-import traceback
 
 import numpy as np
-import requests as requests
-
 from plot_utils.plot_utils import get_config, plot_learning_curve, plot_test_score, plot, plot_mean_sem
 from server import Server
 
@@ -34,51 +30,22 @@ class ActionSpace:
 
 
 class Maze3D:
-
-    def agent_ready(self):
-        while True:
-            try:
-                res = requests.get(self.host + "/agent_ready").json()
-                if 'command' in res and res['command'] == "player_ready":
-                    break
-            except Exception as e:
-                # print("/agent_ready not returned", e)
-                time.sleep(1)
-
-    def send(self, namespace, method="GET", data=None):
-        while True:
-            try:
-                if method == "GET":
-                    res = requests.get(self.host + namespace).json()
-                else:
-                    res = requests.post(self.host + namespace, json=data).json()
-
-                if 'command' in res and res['command'] == "player_ready":
-                    continue
-                return res
-            except Exception as e:
-                traceback.print_exc()
-                self.agent_ready()
-                time.sleep(1)
-
     def __init__(self, config=None, config_file=None):
-        print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
-        self.host = "http://0.0.0.0:5030"
+
         self.action_space = ActionSpace()
         self.fps = 60
         self.done = False
-        self.agent_ready()
+
+        self.server = Server()
+        self.server.start()
+        print("START!!!!")
         self.observation, _ = self.reset()
         self.observation_shape = (len(self.observation),)
 
     def reset(self):
-        print("reset")
-        res = self.send("/reset")
-        return np.array(res['observation']), res['setting_up_duration']
-
-    def training(self, cycle, total_cycles):
-        self.send("/training", "POST", {'cycle': cycle, 'total_cycles': total_cycles})
+        res = self.server.request('reset')
+        return res['observation'], res['setting_up_duration']
 
     def step(self, action_agent, timed_out, goal, action_duration):
         """
@@ -91,19 +58,24 @@ class Maze3D:
         :param action_duration: the duration of the agent's action on the game
         :return: a transition [observation, reward, done, timeout, train_fps, duration_pause, action_list]
         """
-        # print("step", timed_out)
-        if timed_out:
-            print("timeout", timed_out, int(time.time()))
-
         payload = {
             'action_agent': action_agent,
             'action_duration': action_duration,
             'timed_out': timed_out
         }
-        start = time.time()
-        res = self.send("/step", method="POST", data=payload)
+        try:
+            res = self.server.request('step', payload)
+        except Exception:
+            # set connection status and recreate socket
+            print("connection lost... reconnecting")
+            self.server.close()
+            self.server = Server()
+            self.server.start()
+            print("connection re-established")
+            res = self.server.request('step', payload)
 
         self.observation = np.array(res['observation'])
+
         self.done = res['done']
         fps = res['fps']
         duration_pause = res['duration_pause']
@@ -121,7 +93,8 @@ if __name__ == '__main__':
             while True:
                 maze.step(random.randint(-1, 1), None, None, 200)
         except:
-            traceback.print_exc()
+            maze.server.close()
+            pass
 
 
 def save_logs_and_plot(experiment, chkpt_dir, plot_dir, max_games):
