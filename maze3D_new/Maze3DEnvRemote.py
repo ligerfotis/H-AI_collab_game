@@ -1,5 +1,4 @@
 import random
-import socket
 import time
 import traceback
 
@@ -7,7 +6,6 @@ import numpy as np
 import requests as requests
 
 from plot_utils.plot_utils import get_config, plot_learning_curve, plot_test_score, plot, plot_mean_sem
-from server import Server
 
 
 def reward_function_timeout_penalty(goal_reached, timedout):
@@ -57,14 +55,15 @@ class Maze3D:
                     continue
                 return res
             except Exception as e:
-                traceback.print_exc()
+                # in here when wrong request is given
+                # traceback.print_exc()
                 self.agent_ready()
                 time.sleep(1)
 
     def __init__(self, config=None, config_file=None):
         print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
-        self.host = "http://0.0.0.0:5030"
+        self.host = "https://maze-server.app.orbitsystems.gr"
         self.action_space = ActionSpace()
         self.fps = 60
         self.done = False
