@@ -35,8 +35,8 @@ class Maze3D:
     def __init__(self, config=None, config_file=None):
         print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
-        # self.host = "https://maze-server.app.orbitsystems.gr"
-        self.host = "http://localhost:5050"
+        self.host = "https://maze-server.app.orbitsystems.gr"
+        # self.host = "http://localhost:5050"
         self.action_space = ActionSpace()
         self.fps = 60
         self.done = False
