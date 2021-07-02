@@ -118,7 +118,7 @@ class Experiment:
                 env_agent_action, real_agent_action = self.get_agent_action(prev_observation, i_game)
 
                 # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.goal, self.action_duration)
+                transition = self.env.step(env_agent_action, timed_out, self.action_duration, "train")
                 observation, reward, done, train_fps, duration_pause, action_list = transition
 
                 redundant_end_duration += duration_pause  # keep track of the total paused time
@@ -216,7 +216,7 @@ class Experiment:
                 env_agent_action, _ = self.get_agent_action(prev_observation, randomness_criterion)
 
                 # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.goal, self.test_action_duration)
+                transition = self.env.step(env_agent_action, timed_out, self.test_action_duration, "test")
                 observation, _, done, test_fps, duration_pause, action_list = transition
 
                 redundant_end_duration += duration_pause  # keep track of the total paused time
@@ -298,7 +298,7 @@ class Experiment:
                 train_step_counter += 1  # keep track of the step number for each game
 
                 # Environment step
-                transition = self.env.step(None, timed_out, self.goal, self.action_duration)
+                transition = self.env.step(None, timed_out, self.goal, self.action_duration, "test")
                 observation, _, done, train_fps, duration_pause, action_list = transition
                 reward = -1
                 redundant_end_duration += duration_pause  # keep track of the total paused time
@@ -410,7 +410,7 @@ class Experiment:
                     self.agent.learn()
                 # send info to unity
                 start = time.time()
-                if cycle_i % int(update_cycles / 100) == 0:
+                if update_cycles < 100 or cycle_i % int(update_cycles / 100) == 0:
                     self.env.training(cycle_i, update_cycles)
                 misc_duration += time.time() - start
 

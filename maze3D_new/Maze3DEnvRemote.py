@@ -32,6 +32,40 @@ class ActionSpace:
 
 
 class Maze3D:
+    def __init__(self, config=None, config_file=None):
+        print("Init Maze3D")
+        self.config = get_config(config_file) if config_file is not None else config
+        # self.host = "https://maze-server.app.orbitsystems.gr"
+        self.host = "http://localhost:5050"
+        self.action_space = ActionSpace()
+        self.fps = 60
+        self.done = False
+        self.send_config()
+        self.agent_ready()
+        self.observation, _ = self.reset()
+        self.observation_shape = (len(self.observation),)
+
+    def send_config(self):
+        config = {}
+
+        while True:
+            try:
+                config['discrete_input'] = self.config['game']['discrete_input']
+                config['max_duration'] = self.config['Experiment']['max_games_mode']['max_duration']
+                config['action_duration'] = self.config['Experiment']['max_games_mode']['action_duration']
+                config['human_speed'] = 30
+                config['agent_speed'] = 30
+                config['discrete_angle_change'] = 10
+                config['human_assist'] = False
+                config['start_up_screen_display_duration'] = self.config['GUI']['start_up_screen_display_duration']
+                config['timeout_screen_display_duration'] = self.config['GUI']['timeout_screen_display_duration']
+                config['goal_screen_display_duration'] = self.config['GUI']['goal_screen_display_duration']
+                print(config)
+                requests.post(self.host + "/config", json=config).json()
+                return
+            except Exception as e:
+                print("/agent_ready not returned", e)
+                time.sleep(1)
 
     def agent_ready(self):
         while True:
@@ -41,7 +75,7 @@ class Maze3D:
                     break
             except Exception as e:
                 # print("/agent_ready not returned", e)
-                time.sleep(1)
+                time.sleep(0.1)
 
     def send(self, namespace, method="GET", data=None):
         while True:
@@ -58,58 +92,50 @@ class Maze3D:
                 # in here when wrong request is given
                 # traceback.print_exc()
                 self.agent_ready()
-                time.sleep(1)
-
-    def __init__(self, config=None, config_file=None):
-        print("Init Maze3D")
-        self.config = get_config(config_file) if config_file is not None else config
-        self.host = "https://maze-server.app.orbitsystems.gr"
-        self.action_space = ActionSpace()
-        self.fps = 60
-        self.done = False
-        self.agent_ready()
-        self.observation, _ = self.reset()
-        self.observation_shape = (len(self.observation),)
+                time.sleep(0.1)
 
     def reset(self):
-        print("reset")
+        # print("reset")
         res = self.send("/reset")
         return np.array(res['observation']), res['setting_up_duration']
 
     def training(self, cycle, total_cycles):
         self.send("/training", "POST", {'cycle': cycle, 'total_cycles': total_cycles})
 
-    def step(self, action_agent, timed_out, goal, action_duration):
+    def step(self, action_agent, timed_out, action_duration, mode):
         """
         Performs the action of the agent to the environment for action_duration time.
         Simultaneously, receives input from the user via the keyboard arrows.
 
         :param action_agent: the action of the agent. gives -1 for down, 0 for nothing and 1 for up
-        :param timed_out: Not used
-        :param goal: Not used
+        :param timed_out: used
         :param action_duration: the duration of the agent's action on the game
+        :param mode: training or test
         :return: a transition [observation, reward, done, timeout, train_fps, duration_pause, action_list]
         """
         # print("step", timed_out)
-        if timed_out:
-            print("timeout", timed_out, int(time.time()))
+        # if timed_out:
+        #     print("timeout", timed_out, int(time.time()))
 
         payload = {
             'action_agent': action_agent,
             'action_duration': action_duration,
-            'timed_out': timed_out
+            'timed_out': timed_out,
+            'mode': mode
         }
-        start = time.time()
+
         res = self.send("/step", method="POST", data=payload)
 
         self.observation = np.array(res['observation'])
-        self.done = res['done']
+        self.done = res['done']  # true if goal_reached OR timeout
         fps = res['fps']
+        human_action = res['human_action']
+        agent_action = res['agent_action']
         duration_pause = res['duration_pause']
 
         reward = reward_function_timeout_penalty(self.done, timed_out)
 
-        return self.observation, reward, self.done, fps, duration_pause, []
+        return self.observation, reward, self.done, fps, duration_pause, [agent_action, human_action]
 
 
 if __name__ == '__main__':
