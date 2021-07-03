@@ -40,6 +40,7 @@ def plot_learning_curve(x, scores, figure_file):
     plt.savefig(figure_file)
 
 
+
 def plot_actions(x, actions, figure_file):
     plt.figure()
     plt.plot(x, actions)
