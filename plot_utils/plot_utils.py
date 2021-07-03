@@ -12,7 +12,6 @@ from pip._vendor.distlib._backport import shutil
 
 def get_config(config_file='config_sac.yaml'):
     try:
-        print(config_file)
         with open(config_file) as file:
             yaml_data = yaml.safe_load(file)
     except Exception as e:
@@ -23,8 +22,7 @@ def get_config(config_file='config_sac.yaml'):
 def plot_mean_sem(test_games_per_session, data, figure_file, title):
     fig, ax = plt.subplots()
     means = [mean(data[i:i + test_games_per_session]) for i in range(0, len(data), test_games_per_session)]
-    sem = [stdev(data[i:i + test_games_per_session]) / sqrt(len(data[i:i + test_games_per_session])) for i in
-           range(0, len(data), test_games_per_session)]
+    sem = [stdev(data[i:i + test_games_per_session]) / sqrt(len(data[i:i + test_games_per_session])) for i in range(0, len(data), test_games_per_session)]
     x_axis = [i for i in range(len(means))]
     means = np.asarray(means)
     sem = np.asarray(sem)
@@ -59,14 +57,14 @@ def plot(data, figure_file, x=None, title=None):
     plt.savefig(figure_file)
 
 
-def plot_test_score(data, figure_file, title=None):
+def plot_test_score(data, figure_file, average_cycle, title=None):
     fig, ax = plt.subplots()
     clrs = sns.color_palette("husl", 5)
     means, stds, x_axis = [], [], []
-    for i in range(0, len(data), 10):
-        means.append(mean(data[i:i + 10]))
-        stds.append(stdev(data[i:i + 10]))
-        x_axis.append(i + 10)
+    for i in range(0, len(data), average_cycle):
+        means.append(mean(data[i:i + average_cycle]))
+        stds.append(stdev(data[i:i + average_cycle]))
+        x_axis.append(i + average_cycle)
     means, stds, x_axis = np.asarray(means), np.asarray(stds), np.asarray(x_axis)
     with sns.axes_style("darkgrid"):
         # meanst = np.array(means.ix[i].values[3:-1], dtype=np.float64)
@@ -142,51 +140,67 @@ def get_test_plot_and_chkpt_dir(test_config):
     return test_plot_dir, load_checkpoint_name, config
 
 
-def save_logs_and_plot(experiment, chkpt_dir, plot_dir, max_episodes):
-    x = [i + 1 for i in range(len(experiment.score_history))]
-    np.savetxt(chkpt_dir + '/scores.csv', np.asarray(experiment.score_history), delimiter=',')
+def save_metrics(experiment, save_dir):
+    """
+    Saves the metrics related to the experiment
+    :param experiment: the experiment instance
+    :param save_dir: the directory to save the metrics in
+    :return:
+    """
+    # Train/TestScores(.csv)
+    np.savetxt(save_dir + '/train_scores.csv', experiment.train_scores, delimiter=',')
+    np.savetxt(save_dir + '/test_scores.csv', experiment.test_scores, delimiter=',')
 
-    actions = np.asarray(experiment.action_history)
-    # action_main = actions[0].flatten()
-    # action_side = actions[1].flatten()
-    x_actions = [i + 1 for i in range(len(actions))]
-    # Save logs in files
-    np.savetxt(chkpt_dir + '/actions.csv', actions, delimiter=',')
-    # np.savetxt('tmp/sac_' + timestamp + '/action_side.csv', action_side, delimiter=',')
-    np.savetxt(chkpt_dir + '/epidode_durations.csv', np.asarray(experiment.episode_duration_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/avg_length_list.csv', np.asarray(experiment.length_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/grad_updates_durations.csv', experiment.grad_updates_durations, delimiter=',')
+    # Train/Test Game durations(.csv)
+    np.savetxt(save_dir + '/train_game_durations.csv', experiment.train_game_durations, delimiter=',')
+    np.savetxt(save_dir + '/test_game_durations.csv', experiment.test_game_durations, delimiter=',')
 
-    # np.savetxt(chkpt_dir + '/epidode_durations.csv', np.asarray(experiment.game_duration_list), delimiter=',')
+    # Offline Gradient Updates Durations(.csv)
+    np.savetxt(save_dir + '/offline_update_durations.csv', experiment.offline_update_durations, delimiter=',')
 
-    np.savetxt(chkpt_dir + '/game_step_durations.csv', np.asarray(experiment.step_duration_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/online_update_durations.csv', np.asarray(experiment.online_update_duration_list),
-               delimiter=',')
-    np.savetxt(chkpt_dir + '/total_fps.csv', np.asarray(experiment.total_fps_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/train_fps.csv', np.asarray(experiment.train_fps_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/test_fps.csv', np.asarray(experiment.test_fps_list), delimiter=',')
+    # Train/Test Reward per game
+    np.savetxt(save_dir + '/train_rewards.csv', experiment.train_rewards, delimiter=',')
+    np.savetxt(save_dir + '/test_rewards.csv', experiment.test_rewards, delimiter=',')
 
-    # test_game_number logs
-    np.savetxt(chkpt_dir + '/test_episode_duration_list.csv', experiment.test_episode_duration_list, delimiter=',')
-    np.savetxt(chkpt_dir + '/test_score_history.csv', experiment.test_score_history, delimiter=',')
-    np.savetxt(chkpt_dir + '/test_length_list.csv', experiment.test_length_list, delimiter=',')
+    # Train/Test Agent-Human Action pairs
+    # Train/Test Distance Travelled by ball per game
+    np.savetxt(save_dir + '/train_distance_traveled.csv', experiment.train_distance_traveled, delimiter=',')
+    np.savetxt(save_dir + '/test_distance_traveled.csv', experiment.test_distance_traveled, delimiter=',')
 
-    plot_learning_curve(x, experiment.score_history, plot_dir + "/scores.png")
-    # plot_actions(x_actions, action_main, plot_dir + "/action_main.png")
-    # plot_actions(x_actions, action_side, plot_dir + "/action_side.png")
-    plot(experiment.length_list, plot_dir + "/length.png", x=[i + 1 for i in range(max_episodes)])
-    plot(experiment.episode_duration_list, plot_dir + "/epidode_durations.png",
-         x=[i + 1 for i in range(max_episodes)])
-    plot(experiment.grad_updates_durations, plot_dir + "/grad_updates_durations.png",
-         x=[i + 1 for i in range(len(experiment.grad_updates_durations))])
+    # Train/Test Dataframe of transitions
+    # Train/Test step duration per game
+    # q1 , q2, policy and entropy losses
 
-    plot(experiment.step_duration_list, plot_dir + "/game_step_durations.png",
-         x=[i + 1 for i in range(len(experiment.step_duration_list))])
+    # Train/Test fps
+    np.savetxt(save_dir + '/total_fps.csv', experiment.total_fps_list, delimiter=',')
+    np.savetxt(save_dir + '/train_fps.csv', experiment.train_fps_list, delimiter=',')
+    np.savetxt(save_dir + '/test_fps.csv', experiment.test_fps_list, delimiter=',')
+
+    # Train/Test Steps per Game
+    np.savetxt(save_dir + '/train_steps_per_game.csv', experiment.train_steps_per_game, delimiter=',')
+    np.savetxt(save_dir + '/test_steps_per_game.csv', experiment.test_steps_per_game, delimiter=',')
+
+
+def plot_metrics(experiment, plot_dir):
+    """
+    Plots the metrics related to the experiment
+    :param experiment: the experiment instance
+    :param plot_dir: the directory to save the ploted metrics in
+    :return:
+    """
+    plot_mean_sem(experiment.train_interval, experiment.train_scores, plot_dir + "/train_score_mean_sem.png",
+                  "Training Scores")
+    plot_mean_sem(experiment.test_interval, experiment.test_scores, plot_dir + "/test_score_mean_sem.png",
+                  "Testing Scores")
+
+    plot(experiment.train_step_duration_list, plot_dir + "/train_game_step_durations.png",
+         x=[i + 1 for i in range(len(experiment.train_step_duration_list))])
     plot(experiment.test_step_duration_list, plot_dir + "/test_game_step_durations.png",
          x=[i + 1 for i in range(len(experiment.test_step_duration_list))])
 
-    plot(experiment.online_update_duration_list, plot_dir + "/online_updates_durations.png",
-         x=[i + 1 for i in range(len(experiment.online_update_duration_list))])
+    plot(experiment.grad_updates_durations, plot_dir + "/grad_updates_durations.png",
+         x=[i + 1 for i in range(len(experiment.grad_updates_durations))])
+
     plot(experiment.total_fps_list, plot_dir + "/total_fps.png",
          x=[i + 1 for i in range(len(experiment.total_fps_list))])
     plot(experiment.train_fps_list, plot_dir + "/train_fps.png",
@@ -194,16 +208,15 @@ def save_logs_and_plot(experiment, chkpt_dir, plot_dir, max_episodes):
     plot(experiment.test_fps_list, plot_dir + "/test_fps.png",
          x=[i + 1 for i in range(len(experiment.test_fps_list))])
 
-    # plot test_game_number logs
-    x = [i + 1 for i in range(len(experiment.test_length_list))]
-    plot_test_score(experiment.test_score_history, plot_dir + "/test_scores.png")
-    # plot_actions(x_actions, action_main, plot_dir + "/action_main.png")
-    # plot_actions(x_actions, action_side, plot_dir + "/action_side.png")
-    plot(experiment.test_length_list, plot_dir + "/test_length.png",
-         x=x)
-    plot(experiment.test_episode_duration_list, plot_dir + "/test_episode_duration.png",
-         x=x)
-    try:
-        plot_test_score(experiment.score_history, plot_dir + "/test_scores_mean_std.png")
-    except:
-        print("An exception occurred while plotting")
+    plot(experiment.train_rewards, plot_dir + "/train_rewards.png",
+         x=[i + 1 for i in range(len(experiment.train_rewards))])
+    plot(experiment.test_rewards, plot_dir + "/test_rewards.png",
+         x=[i + 1 for i in range(len(experiment.test_rewards))])
+
+    plot_mean_sem(experiment.train_interval, experiment.train_rewards, plot_dir + "/train_reward_mean_sem.png",
+                  "Training Scores")
+    plot_mean_sem(experiment.test_interval, experiment.test_rewards, plot_dir + "/test_reward_mean_sem.png",
+                  "Testing Scores")
+
+    plot(experiment.train_steps_per_game, plot_dir + "/train_steps_per_game.png", x=[i + 1 for i in range(len(experiment.train_steps_per_game))])
+    plot(experiment.test_steps_per_game, plot_dir + "/test_steps_per_game.png", x=[i + 1 for i in range(len(experiment.test_steps_per_game))])

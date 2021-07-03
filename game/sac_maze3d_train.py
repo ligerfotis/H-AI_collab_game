@@ -7,7 +7,7 @@ from maze3D_new.Maze3DEnvRemote import Maze3D as Maze3D_v2
 from experiment import Experiment
 
 # RL modules
-from plot_utils.plot_utils import get_config, get_plot_and_chkpt_dir, save_logs_and_plot
+from plot_utils.plot_utils import get_config, get_plot_and_chkpt_dir, save_metrics, plot_metrics
 from rl_models.utils import get_sac_agent
 
 import sys
@@ -28,13 +28,13 @@ def main(argv):
     # creating environment
     maze = Maze3D_v2(config_file=argv[0])
 
-    chkpt_dir, load_checkpoint_name, plot_dir = [None, None, None]
+    save_dir, load_checkpoint_name, plot_dir = [None, None, None]
     if config["game"]["save"]:
         # create the checkpoint and plot directories for this experiment
-        chkpt_dir, plot_dir, load_checkpoint_name = get_plot_and_chkpt_dir(config, argv[1], argv[0])
+        save_dir, plot_dir, load_checkpoint_name = get_plot_and_chkpt_dir(config, argv[1], argv[0])
 
     # create the SAC agent
-    sac = get_sac_agent(config, maze, chkpt_dir)
+    sac = get_sac_agent(config, maze, save_dir)
 
     # create the experiment
     experiment = Experiment(maze, sac, config=config)
@@ -59,13 +59,14 @@ def main(argv):
 
     if config["game"]["save"]:
         # save training logs to a pickle file
-        experiment.df.to_pickle(plot_dir + '/training_logs.pkl')
+        experiment.train_transitions_df.to_pickle(plot_dir + '/train_logs.pkl')
+        experiment.test_transitions_df.to_pickle(plot_dir + '/test_logs.pkl')
 
         if not config['game']['test_model']:
             # save rest of the experiment logs and plot them
-            save_logs_and_plot(experiment, chkpt_dir, plot_dir, experiment.max_games)
-            experiment.save_info(chkpt_dir, experiment_duration, experiment.max_games)
-    pg.quit()
+            save_metrics(experiment, save_dir)
+            plot_metrics(experiment, plot_dir)
+            experiment.save_info(save_dir, experiment_duration, experiment.max_games)
 
 
 if __name__ == '__main__':
