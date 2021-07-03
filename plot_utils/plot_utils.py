@@ -180,6 +180,9 @@ def save_metrics(experiment, save_dir):
     np.savetxt(save_dir + '/train_steps_per_game.csv', experiment.train_steps_per_game, delimiter=',')
     np.savetxt(save_dir + '/test_steps_per_game.csv', experiment.test_steps_per_game, delimiter=',')
 
+    # Internet Delay
+    np.savetxt(save_dir + '/internet_delay.csv', experiment.env.internet_delay, delimiter=',')
+
 
 def plot_metrics(experiment, plot_dir):
     """
@@ -212,6 +215,9 @@ def plot_metrics(experiment, plot_dir):
          x=[i + 1 for i in range(len(experiment.train_rewards))])
     plot(experiment.test_rewards, plot_dir + "/test_rewards.png",
          x=[i + 1 for i in range(len(experiment.test_rewards))])
+
+    plot(experiment.env.internet_delay, plot_dir + "/internet_delay.png",
+         x=[i + 1 for i in range(len(experiment.env.internet_delay))])
 
     plot_mean_sem(experiment.train_interval, experiment.train_rewards, plot_dir + "/train_reward_mean_sem.png",
                   "Training Scores")

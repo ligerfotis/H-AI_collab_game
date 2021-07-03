@@ -36,8 +36,10 @@ class Maze3D:
         print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
         # self.host = "https://maze-server.app.orbitsystems.gr"
-        self.host = "http://79.129.14.204:8080"
-        # self.host = "http://localhost:5050"
+        # self.host = "http://79.129.14.204:8080"
+        # self.host = "http://maze3d.duckdns.org:8080/"
+        # self.host = 'http://panos-server.duckdns.org:8080'
+        self.host = "http://localhost:8080"
         self.action_space = ActionSpace()
         self.fps = 60
         self.done = False
@@ -45,6 +47,7 @@ class Maze3D:
         self.agent_ready()
         self.observation, _ = self.reset()
         self.observation_shape = (len(self.observation),)
+        self.internet_delay = []
 
     def send_config(self):
         config = {}
@@ -130,7 +133,9 @@ class Maze3D:
         }
         start_time = time.time()
         res = self.send("/step", method="POST", data=payload)
-        print(time.time() - start_time)
+        delay = time.time() - start_time
+        self.internet_delay.append(delay)
+        print(delay)
         self.observation = np.array(res['observation'])
         self.done = res['done']  # true if goal_reached OR timeout
         fps = res['fps']

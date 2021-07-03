@@ -135,8 +135,9 @@ class Experiment:
                 env_agent_action, real_agent_action = self.get_agent_action(prev_observation, i_game)
 
                 # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.goal, self.action_duration)
+                transition = self.env.step(env_agent_action, timed_out, self.action_duration, mode='train')
                 observation, reward, done, train_fps, duration_pause, action_list = transition
+
                 redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 # check if the game has timed out
@@ -237,9 +238,8 @@ class Experiment:
                 env_agent_action, _ = self.get_agent_action(prev_observation, randomness_criterion)
 
                 # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.goal, self.test_action_duration)
+                transition = self.env.step(env_agent_action, timed_out, self.test_action_duration, mode='test')
                 observation, _, done, test_fps, duration_pause, action_list = transition
-
                 redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 if time.time() - start_game_time - redundant_end_duration >= self.test_max_duration:
