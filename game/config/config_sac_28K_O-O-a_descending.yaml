@@ -49,14 +49,14 @@ Experiment:
   mode: max_games_mode   # Choose max_games_mode or max_interactions_mode
 
   max_games_mode:
-    max_games: 50  # max training games per experiment
+    max_games: 3  # max training games per experiment
     max_duration: 10 # max duration per game in seconds
     buffer_memory_size: 100000000
     action_duration: 0.2 # Time duration in sec between consecutive RL agent actions
     start_training_step_on_game: 2 # will not train the agent before this trial
     stop_random_agent: 2 # stops using random agent on this trial and start using SAC
     learn_every_n_games: 2 # Perform offline gradient updates after every `learn_every_n_games` episodes
-    total_update_cycles: 10000 # Total number of offline gradient updates throughout the whole experiment
+    total_update_cycles: 1000 # Total number of offline gradient updates throughout the whole experiment
     reward_scale: 2
     log_interval: 2  # print avg reward in the interval
 

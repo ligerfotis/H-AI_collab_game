@@ -20,6 +20,7 @@ https://github.com/kengz/SLM-Lab
 https://github.com/EveLIn3/Discrete_SAC_LunarLander/blob/master/sac_discrete.py
 """
 
+
 def main(argv):
     # get configuration
     config = get_config(argv[0])
@@ -50,7 +51,7 @@ def main(argv):
     else:
         print("Unknown training mode")
         exit(1)
-
+    experiment.env.finished()
     end_experiment = time.time()
     experiment_duration = timedelta(seconds=end_experiment - start_experiment - experiment.duration_pause_total)
 

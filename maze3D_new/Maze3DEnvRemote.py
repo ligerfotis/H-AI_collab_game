@@ -36,6 +36,7 @@ class Maze3D:
         print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
         self.host = "https://maze-server.app.orbitsystems.gr"
+        # self.host = "http://79.129.14.204:8080"
         # self.host = "http://localhost:5050"
         self.action_space = ActionSpace()
         self.fps = 60
@@ -102,6 +103,10 @@ class Maze3D:
     def training(self, cycle, total_cycles):
         self.send("/training", "POST", {'cycle': cycle, 'total_cycles': total_cycles})
 
+    def finished(self):
+        print("finished")
+        self.send("/finished", "GET")
+
     def step(self, action_agent, timed_out, action_duration, mode):
         """
         Performs the action of the agent to the environment for action_duration time.
@@ -123,9 +128,9 @@ class Maze3D:
             'timed_out': timed_out,
             'mode': mode
         }
-
+        start_time = time.time()
         res = self.send("/step", method="POST", data=payload)
-
+        print(time.time() - start_time)
         self.observation = np.array(res['observation'])
         self.done = res['done']  # true if goal_reached OR timeout
         fps = res['fps']
