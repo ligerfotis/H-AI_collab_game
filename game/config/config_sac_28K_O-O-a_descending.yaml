@@ -52,7 +52,7 @@ Experiment:
     max_games: 4  # max training games per experiment
     max_duration: 10 # max duration per game in seconds
     buffer_memory_size: 100000000
-    action_duration: 0.05 # Time duration in sec between consecutive RL agent actions
+    action_duration: 0.2 # Time duration in sec between consecutive RL agent actions
     start_training_step_on_game: 2 # will not train the agent before this trial
     stop_random_agent: 2 # stops using random agent on this trial and start using SAC
     learn_every_n_games: 2 # Perform offline gradient updates after every `learn_every_n_games` episodes
@@ -76,12 +76,11 @@ Experiment:
   test_loop:
     max_games: 2 # total test games during each test session
     max_duration: 10 # max duration per test game in seconds
-    action_duration: 0.05 # Time duration between consecutive RL agent actions
+    action_duration: 0.2 # Time duration between consecutive RL agent actions
     max_score: 200
 
 GUI:
   start_up_screen_display_duration: 2 # the time in sec the set-up screen is being displayed
-  timeout_screen_display_duration: 3  # the time in sec the timeout screen is being displayed
-  goal_screen_display_duration: 3 # the time in sec the goal screen is being displayed
+  popup_window_time: 3  # the time in sec the timeout or goal screen is being displayed
 
 

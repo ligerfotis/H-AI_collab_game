@@ -62,8 +62,7 @@ class Maze3D:
                 config['discrete_angle_change'] = 10
                 config['human_assist'] = False
                 config['start_up_screen_display_duration'] = self.config['GUI']['start_up_screen_display_duration']
-                config['timeout_screen_display_duration'] = self.config['GUI']['timeout_screen_display_duration']
-                config['goal_screen_display_duration'] = self.config['GUI']['goal_screen_display_duration']
+                config['popup_window_time'] = self.config['GUI']['popup_window_time']
                 print(config)
                 requests.post(self.host + "/config", json=config).json()
                 return
@@ -84,7 +83,7 @@ class Maze3D:
     def send(self, namespace, method="GET", data=None):
         while True:
             try:
-                if method == "GET":
+                if method == " GET":
                     res = requests.get(self.host + namespace).json()
                 else:
                     res = requests.post(self.host + namespace, json=data).json()
@@ -100,7 +99,9 @@ class Maze3D:
 
     def reset(self):
         # print("reset")
+        start_time = time.time()
         res = self.send("/reset")
+        print("reset time:", time.time() - start_time)
         return np.array(res['observation']), res['setting_up_duration']
 
     def training(self, cycle, total_cycles):

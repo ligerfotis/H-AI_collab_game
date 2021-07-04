@@ -54,6 +54,7 @@ class Experiment:
             self.test_max_games = config['Experiment']['test_loop']['max_games']
             self.randomness_threshold = config['Experiment'][self.mode]['stop_random_agent']
             self.train_interval = config['Experiment'][self.mode]['learn_every_n_games']
+            self.popup_window_time = config['GUI']['popup_window_time']
 
 
         # fps tracking
@@ -177,6 +178,7 @@ class Experiment:
 
                 # the ball has either reached the goal or the game has timed out
                 if done:
+                    time.sleep(self.popup_window_time)
                     break
 
             running_reward += game_reward  # total running reward. used for logging averages
