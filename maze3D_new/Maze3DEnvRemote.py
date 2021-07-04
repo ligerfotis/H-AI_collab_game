@@ -77,10 +77,10 @@ class Maze3D:
     def set_host(self):
         while True:
             try:
-                requests.get(self.host + "/set_server_host/" + self.outer_host).json()
+                requests.post(self.ip_host + "/set_server_host",json={'server_host':self.outer_host}).json()
                 break
             except Exception as e:
-                # print("/agent_ready not returned", e)
+                print("ip host offline", e)
                 time.sleep(0.1)
 
     def agent_ready(self):
