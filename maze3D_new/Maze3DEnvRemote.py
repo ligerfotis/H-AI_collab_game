@@ -36,10 +36,13 @@ class Maze3D:
         print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
         self.ip_host = "https://maze-server.app.orbitsystems.gr"
+        self.outer_host = "http://maze3d.duckdns.org:8080"
+        # self.outer_host = "http://localhost:8080"
+
         # self.host = "http://79.129.14.204:8080"
-        self.host = "http://maze3d.duckdns.org:8080"
+        # self.host = "http://maze3d.duckdns.org:8080"
         # self.host = 'http://panos-server.duckdns.org:8080'
-        # self.host = "http://localhost:8080"
+        self.host = "http://localhost:8080"
         self.action_space = ActionSpace()
         self.fps = 60
         self.done = False
@@ -58,9 +61,9 @@ class Maze3D:
                 config['discrete_input'] = self.config['game']['discrete_input']
                 config['max_duration'] = self.config['Experiment']['max_games_mode']['max_duration']
                 config['action_duration'] = self.config['Experiment']['max_games_mode']['action_duration']
-                config['human_speed'] = 30
-                config['agent_speed'] = 30
-                config['discrete_angle_change'] = 10
+                config['human_speed'] = 35
+                config['agent_speed'] = 35
+                config['discrete_angle_change'] = 3
                 config['human_assist'] = False
                 config['start_up_screen_display_duration'] = self.config['GUI']['start_up_screen_display_duration']
                 config['popup_window_time'] = self.config['GUI']['popup_window_time']
@@ -74,7 +77,7 @@ class Maze3D:
     def set_host(self):
         while True:
             try:
-                requests.get(self.host + "/set_server_host/" + self.host).json()
+                requests.get(self.host + "/set_server_host/" + self.outer_host).json()
                 break
             except Exception as e:
                 # print("/agent_ready not returned", e)
