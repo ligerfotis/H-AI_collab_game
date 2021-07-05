@@ -1,8 +1,9 @@
 import math
 from datetime import timedelta
 
-column_names = ["actions_x", "actions_y", "tray_rot_x", "tray_rot_y", "tray_rot_vel_x", "tray_rot_vel_y",
-                "ball_pos_x", "ball_pos_y", "ball_vel_x", "ball_vel_y"]
+# column_names = ["actions_x", "actions_y", "tray_rot_x", "tray_rot_y", "tray_rot_vel_x", "tray_rot_vel_y",
+#                 "ball_pos_x", "ball_pos_y", "ball_vel_x", "ball_vel_y"]
+column_names = ["prev_observation", "real_agent_action", "env_egent_action", "human_action", "observation", "reward"]
 
 
 def get_distance_traveled(dist_travel, prev_observation, observation):
@@ -18,12 +19,15 @@ def get_distance_traveled(dist_travel, prev_observation, observation):
     return dist_travel
 
 
-def get_row_to_store(prev_observation):
+def get_row_to_store(prev_observation, real_agent_action, env_agent_action, human_action, observation, reward):
     # constructs a row to add in a dataframe
-    return {"ball_pos_x": prev_observation[0], "ball_pos_y": prev_observation[1],
-            "ball_vel_x": prev_observation[2], "ball_vel_y": prev_observation[3],
-            "tray_rot_x": prev_observation[4], "tray_rot_y": prev_observation[5],
-            "tray_rot_vel_x": prev_observation[6], "tray_rot_vel_y": prev_observation[7]}
+    return {'prev_observation': prev_observation, 'real_agent_action': real_agent_action,
+            'env_agent_action': env_agent_action, 'human_action': human_action, 'observation': observation,
+            'reward': reward}
+    # return {"ball_pos_x": prev_observation[0], "ball_pos_y": prev_observation[1],
+    #         "ball_vel_x": prev_observation[2], "ball_vel_y": prev_observation[3],
+    #         "tray_rot_x": prev_observation[4], "tray_rot_y": prev_observation[5],
+    #         "tray_rot_vel_x": prev_observation[6], "tray_rot_vel_y": prev_observation[7]}
 
 
 def get_env_action(agent_action, discrete):

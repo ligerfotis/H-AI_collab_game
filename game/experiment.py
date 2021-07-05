@@ -137,7 +137,7 @@ class Experiment:
 
                 # Environment step
                 transition = self.env.step(env_agent_action, timed_out, self.action_duration, mode='train')
-                observation, reward, done, train_fps, duration_pause, action_list = transition
+                observation, reward, done, train_fps, duration_pause, action_pair = transition
 
                 redundant_end_duration += duration_pause  # keep track of the total paused time
 
@@ -149,7 +149,7 @@ class Experiment:
                 self.train_fps_list.append(train_fps)
                 self.total_fps_list.append(train_fps)
 
-                self.action_history = self.action_history + action_list
+                self.action_history = self.action_history + action_pair
 
                 # add experience to buffer
                 interaction = [prev_observation, real_agent_action, reward, observation, done]
@@ -165,7 +165,9 @@ class Experiment:
                 train_distance_travel = get_distance_traveled(train_distance_travel, prev_observation, observation)
 
                 # append row to the dataframe
-                new_row = get_row_to_store(prev_observation)
+                # "prev_observation", "real_agent_action", "env_egent_action", "human_action", "observation", "reward"
+
+                new_row = get_row_to_store(prev_observation, real_agent_action, env_agent_action, action_pair[1], observation, reward)
                 # todo: save transition
                 self.train_transitions_df = self.train_transitions_df.append(new_row, ignore_index=True)
 
@@ -237,11 +239,11 @@ class Experiment:
                 test_game_step_start_time = time.time()  # the step start time
                 test_step_counter += 1  # keep track of the step number for each game
 
-                env_agent_action, _ = self.get_agent_action(prev_observation, randomness_criterion)
+                env_agent_action, real_agent_action = self.get_agent_action(prev_observation, randomness_criterion)
 
                 # Environment step
                 transition = self.env.step(env_agent_action, timed_out, self.test_action_duration, mode='test')
-                observation, _, done, test_fps, duration_pause, action_list = transition
+                observation, _, done, test_fps, duration_pause, action_pair = transition
                 redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 if time.time() - start_game_time - redundant_end_duration >= self.test_max_duration:
@@ -252,13 +254,13 @@ class Experiment:
                 self.total_fps_list.append(test_fps)
 
                 # keep track of the action history. action_list contains every agent-human pair sent to the environment
-                self.action_history = self.action_history + action_list
+                self.action_history = self.action_history + action_pair
 
                 # compute travelled distance
                 test_distance_travel = get_distance_traveled(test_distance_travel, prev_observation, observation)
 
                 # append row to the dataframe
-                new_row = get_row_to_store(prev_observation)
+                new_row = get_row_to_store(prev_observation, real_agent_action, env_agent_action, action_pair[1], observation, reward)
 
                 # todo: save transition
                 self.test_transitions_df = self.test_transitions_df.append(new_row, ignore_index=True)
@@ -394,7 +396,11 @@ class Experiment:
         :param experiment_duration: the total duration of the experiment
         :param total_games: the total number of train games played
         """
-        info = {'experiment_duration': experiment_duration,
+        info = {'mean action duration': np.mean(np.array(self.env.internet_delay)),
+                'std action duration': np.std(np.array(self.env.internet_delay)),
+                'max action duration': np.max(np.array(self.env.internet_delay)),
+                'min action duration': np.min(np.array(self.env.internet_delay)),
+                'experiment_duration': experiment_duration,
                 'best_train_reward': self.best_train_reward,
                 'best_train_reward_length': self.best_train_reward_length,
                 'best_train_reward_game': self.best_train_reward_game,

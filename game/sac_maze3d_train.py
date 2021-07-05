@@ -59,8 +59,8 @@ def main(argv):
 
     if config["game"]["save"]:
         # save training logs to a pickle file
-        experiment.train_transitions_df.to_pickle(plot_dir + '/train_logs.pkl')
-        experiment.test_transitions_df.to_pickle(plot_dir + '/test_logs.pkl')
+        experiment.train_transitions_df.to_pickle(save_dir + '/train_logs.pkl')
+        experiment.test_transitions_df.to_pickle(save_dir + '/test_logs.pkl')
 
         if not config['game']['test_model']:
             # save rest of the experiment logs and plot them
