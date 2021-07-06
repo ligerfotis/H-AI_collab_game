@@ -96,7 +96,7 @@ class Maze3D:
     def send(self, namespace, method="GET", data=None):
         while True:
             try:
-                if method == " GET":
+                if method == "GET":
                     res = requests.get(self.host + namespace).json()
                 else:
                     res = requests.post(self.host + namespace, json=data).json()

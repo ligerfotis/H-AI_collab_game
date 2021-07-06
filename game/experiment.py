@@ -189,7 +189,7 @@ class Experiment:
             self.update_best_reward(game_reward, train_step_counter, i_game, mode="train")
 
             # keep track of best game score and when it occurred
-            game_score = self.max_game_duration * self.action_duration - train_step_counter
+            game_score = self.max_score - train_step_counter
             self.update_best_score(game_score, train_step_counter, i_game, mode="train")
 
             # keep track of total pause duration
@@ -243,7 +243,7 @@ class Experiment:
 
                 # Environment step
                 transition = self.env.step(env_agent_action, timed_out, self.test_action_duration, mode='test')
-                observation, _, done, test_fps, duration_pause, action_pair = transition
+                observation, reward, done, test_fps, duration_pause, action_pair = transition
                 redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 if time.time() - start_game_time - redundant_end_duration >= self.test_max_duration:
@@ -284,7 +284,7 @@ class Experiment:
             # keep track of best game reward
             self.update_best_reward(game_reward, test_step_counter, game, mode="test")
             # keep track of best game score and when it occurred
-            game_score = self.max_game_duration * self.action_duration - test_step_counter
+            game_score = self.max_score - test_step_counter
             self.update_best_score(game_score, test_step_counter, game, mode="test")
 
             self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration, mode="test")
