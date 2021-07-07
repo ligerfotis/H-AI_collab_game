@@ -85,6 +85,9 @@ class Experiment:
         self.best_test_score = 0
         self.best_train_score_game, self.best_train_score_length = -1, -1
         self.best_test_score_game, self.best_test_score_length = -1, -1
+        # performance metrics
+        self.train_game_success_counter, self.test_game_success_counter = 0, 0
+        self.train_game_success_rates, self.test_game_success_rates = [], []
 
         self.human_actions, self.update_cycles = None, None
         self.save_models, self.flag = True, True
@@ -182,6 +185,9 @@ class Experiment:
 
                 # the ball has either reached the goal or the game has timed out
                 if done:
+                    # goal is reached
+                    if not timed_out:
+                        self.train_game_success_counter += 1
                     time.sleep(self.popup_window_time)
                     break
 
@@ -229,6 +235,7 @@ class Experiment:
         self.test_game_number += 1  # keep track of the testing session number
         print('Test {}'.format(self.test_game_number))
         best_score = 0  # best score during this session
+        self.test_game_success_counter = 0
 
         for game in range(1, self.test_max_games + 1):
             prev_observation, setting_up_duration = self.env.reset()  # get environment's initial state
@@ -279,6 +286,10 @@ class Experiment:
 
                 # the ball has either reached the goal or the game has timed out
                 if done:
+                    # goal is reached
+                    if not timed_out:
+                        self.test_game_success_counter += 1
+                    time.sleep(self.popup_window_time)
                     break
 
             # keep track of total pause duration
@@ -296,6 +307,10 @@ class Experiment:
             test_step_counter = 0
 
         # todo: save best model
+
+        # save success rate
+        self.test_game_success_rates.append(self.test_game_success_counter/self.test_max_games)
+
         # logging
         test_print_logs(mean(self.test_scores[-self.log_interval:]),
                         mean(self.test_steps_per_game[-self.log_interval:]),
@@ -643,6 +658,8 @@ class Experiment:
             print("update interval: {}".format(self.agent.update_interval))
             # check if it is time to learn
             if i_game % self.agent.update_interval == 0:
+                self.train_game_success_rates.append(self.train_game_success_counter / self.agent.update_interval)
+                self.train_game_success_counter = 0
                 print("off policy learning.")
                 # get the number of cycles
                 self.update_cycles = self.scheduler.schedule(self.max_game_duration, self.action_duration, self.mode,
