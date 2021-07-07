@@ -66,7 +66,7 @@ class Experiment:
         self.offline_update_durations = []
         # train
         self.train_distance_traveled, self.test_distance_traveled, self.train_rewards, self.game_duration_list = [], [], [], []
-        self.online_update_duration_list, self.train_step_duration_list, self.grad_updates_durations = [], [], []
+        self.online_update_durations, self.train_step_duration_list, self.grad_updates_durations = [], [], []
         self.action_history, self.score_history, self.episode_duration_list, self.train_steps_per_game = [], [], [], []
         # test
         self.test_rewards, self.test_step_duration_list, self.test_score_history = [], [], []
@@ -625,7 +625,7 @@ class Experiment:
                     # update the target networks
                     self.agent.soft_update_target()
         # update the time needed for this update
-        self.online_update_duration_list.append(time.time() - start_online_update)
+        self.online_update_durations.append(time.time() - start_online_update)
 
     def ready_to_learn(self, i_game):
         """Checks if the agent is ready to learn, based on the current game"""
@@ -637,6 +637,7 @@ class Experiment:
         :param i_game: current game
         :return:
         """
+        start_time = time.time()
         # if we do not test the model and the agent is ready to learn
         if not self.test_model and self.ready_to_learn(i_game):
             print("update interval: {}".format(self.agent.update_interval))
@@ -661,6 +662,8 @@ class Experiment:
 
                     # save the models after each grad update
                     self.agent.save_models()
+        self.offline_update_durations.append(time.time() - start_time)
+
 
     def testing_session(self, i_game):
         """

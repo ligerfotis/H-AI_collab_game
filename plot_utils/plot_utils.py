@@ -159,6 +159,9 @@ def save_metrics(experiment, save_dir):
     # Offline Gradient Updates Durations(.csv)
     np.savetxt(save_dir + '/offline_update_durations.csv', experiment.offline_update_durations, delimiter=',')
 
+    # Online Gradient Updates Durations(.csv)
+    np.savetxt(save_dir + '/online_update_durations.csv', experiment.online_update_durations, delimiter=',')
+
     # Train/Test Reward per game
     np.savetxt(save_dir + '/train_rewards.csv', experiment.train_rewards, delimiter=',')
     np.savetxt(save_dir + '/test_rewards.csv', experiment.test_rewards, delimiter=',')
@@ -202,7 +205,10 @@ def plot_metrics(experiment, plot_dir):
     plot(experiment.test_step_duration_list, plot_dir + "/test_game_step_durations.png",
          x=[i + 1 for i in range(len(experiment.test_step_duration_list))])
 
-    plot(experiment.grad_updates_durations, plot_dir + "/grad_updates_durations.png",
+    plot(experiment.offline_update_durations, plot_dir + "/offline_grad_updates_durations.png",
+         x=[i + 1 for i in range(len(experiment.offline_update_durations))])
+
+    plot(experiment.online_update_durations, plot_dir + "/online_grad_updates_durations.png",
          x=[i + 1 for i in range(len(experiment.grad_updates_durations))])
 
     plot(experiment.total_fps_list, plot_dir + "/total_fps.png",

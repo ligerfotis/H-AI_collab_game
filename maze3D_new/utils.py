@@ -55,7 +55,7 @@ def save_logs_and_plot(experiment, chkpt_dir, plot_dir, max_games):
     np.savetxt(chkpt_dir + '/epidode_durations.csv', np.asarray(experiment.game_duration_list), delimiter=',')
 
     np.savetxt(chkpt_dir + '/game_step_durations.csv', np.asarray(experiment.train_step_duration_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/online_update_durations.csv', np.asarray(experiment.online_update_duration_list), delimiter=',')
+    np.savetxt(chkpt_dir + '/online_update_durations.csv', np.asarray(experiment.online_update_durations), delimiter=',')
     np.savetxt(chkpt_dir + '/total_fps.csv', np.asarray(experiment.total_fps_list), delimiter=',')
     np.savetxt(chkpt_dir + '/train_fps.csv', np.asarray(experiment.train_fps_list), delimiter=',')
     np.savetxt(chkpt_dir + '/test_fps.csv', np.asarray(experiment.test_fps_list), delimiter=',')
@@ -81,8 +81,8 @@ def save_logs_and_plot(experiment, chkpt_dir, plot_dir, max_games):
     plot(experiment.test_step_duration_list, plot_dir + "/test_game_step_durations.png",
          x=[i + 1 for i in range(len(experiment.test_step_duration_list))])
 
-    plot(experiment.online_update_duration_list, plot_dir + "/online_updates_durations.png",
-         x=[i + 1 for i in range(len(experiment.online_update_duration_list))])
+    plot(experiment.online_update_durations, plot_dir + "/online_updates_durations.png",
+         x=[i + 1 for i in range(len(experiment.online_update_durations))])
     plot(experiment.total_fps_list, plot_dir + "/total_fps.png",
          x=[i + 1 for i in range(len(experiment.total_fps_list))])
     plot(experiment.train_fps_list, plot_dir + "/train_fps.png",
