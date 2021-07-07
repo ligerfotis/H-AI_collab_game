@@ -166,6 +166,10 @@ def save_metrics(experiment, save_dir):
     np.savetxt(save_dir + '/train_rewards.csv', experiment.train_rewards, delimiter=',')
     np.savetxt(save_dir + '/test_rewards.csv', experiment.test_rewards, delimiter=',')
 
+    # Train/Test Game Success Rate
+    np.savetxt(save_dir + '/train_game_success_rates.csv', experiment.train_game_success_rates, delimiter=',')
+    np.savetxt(save_dir + '/test_game_success_rates.csv', experiment.test_game_success_rates, delimiter=',')
+
     # Train/Test Agent-Human Action pairs
     # Train/Test Distance Travelled by ball per game
     np.savetxt(save_dir + '/train_distance_traveled.csv', experiment.train_distance_traveled, delimiter=',')
@@ -208,8 +212,8 @@ def plot_metrics(experiment, plot_dir):
     plot(experiment.offline_update_durations, plot_dir + "/offline_grad_updates_durations.png",
          x=[i + 1 for i in range(len(experiment.offline_update_durations))])
 
-    plot(experiment.online_update_durations, plot_dir + "/online_grad_updates_durations.png",
-         x=[i + 1 for i in range(len(experiment.grad_updates_durations))])
+    plot(experiment.online_update_durations, plot_dir + "/online_update_durations.png",
+         x=[i + 1 for i in range(len(experiment.online_update_durations))])
 
     plot(experiment.total_fps_list, plot_dir + "/total_fps.png",
          x=[i + 1 for i in range(len(experiment.total_fps_list))])
@@ -222,6 +226,11 @@ def plot_metrics(experiment, plot_dir):
          x=[i + 1 for i in range(len(experiment.train_rewards))])
     plot(experiment.test_rewards, plot_dir + "/test_rewards.png",
          x=[i + 1 for i in range(len(experiment.test_rewards))])
+
+    plot(experiment.train_game_success_rates, plot_dir + "/train_game_success_rates.png",
+         x=[i + 1 for i in range(len(experiment.train_game_success_rates))])
+    plot(experiment.test_game_success_rates, plot_dir + "/test_game_success_rates.png",
+         x=[i + 1 for i in range(len(experiment.test_game_success_rates))])
 
     plot(experiment.env.internet_delay, plot_dir + "/internet_delay.png",
          x=[i + 1 for i in range(len(experiment.env.internet_delay))])
