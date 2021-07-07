@@ -72,6 +72,7 @@ class Experiment:
         self.test_rewards, self.test_step_duration_list, self.test_score_history = [], [], []
         self.test_episode_duration_list, self.test_steps_per_game, self.test_distance_travel_list = [], [], []
         self.test_game_duration_list = []
+        self.test_reward_list, self.test_length_list = [], []
 
         # reward metrics
         self.best_score = -100 - 1 * self.max_game_duration / self.action_duration
@@ -87,7 +88,8 @@ class Experiment:
 
         self.human_actions, self.update_cycles = None, None
         self.save_models, self.flag = True, True
-        self.test_game_number, self.train_game_number, self.duration_pause_total, self.total_steps = 0, 0, 0, 0
+        self.test_game_number, self.train_game_number, self.duration_pause_total = 0, 0, 0
+        self.train_total_steps, self.test_total_steps = 0, 0
 
         # initialize train and test transition dataframes
         self.train_transitions_df = pd.DataFrame(columns=column_names)
@@ -130,7 +132,7 @@ class Experiment:
             # 1. Training Session
             while True:
                 train_game_start_time = time.time()
-                self.total_steps += 1
+                self.train_total_steps += 1
                 train_step_counter += 1  # keep track of the step number for each game
 
                 env_agent_action, real_agent_action = self.get_agent_action(prev_observation, i_game)
@@ -211,7 +213,7 @@ class Experiment:
             avg_game_duration = np.mean(self.train_game_durations[-self.log_interval:])
             running_reward, avg_length = print_logs(self.config["game"]["verbose"],
                                                     self.config['game']['test_model'],
-                                                    self.total_steps, i_game, self.total_steps, running_reward,
+                                                    self.train_total_steps, i_game, self.train_total_steps, running_reward,
                                                     avg_length, self.log_interval, avg_game_duration)
 
         tracker.print_diff()  # to track memory leaks
@@ -328,7 +330,7 @@ class Experiment:
             # 1. Training Session
             while True:
                 train_game_start_time = time.time()
-                self.total_steps += 1
+                self.test_total_steps += 1
                 train_step_counter += 1  # keep track of the step number for each game
 
                 # Environment step
@@ -381,7 +383,7 @@ class Experiment:
             avg_game_duration = np.mean(self.game_duration_list[-self.log_interval:])
             running_reward, avg_length = print_logs(self.config["game"]["verbose"],
                                                     self.config['game']['test_model'],
-                                                    self.total_steps, i_game, self.total_steps, running_reward,
+                                                    self.train_total_steps, i_game, self.train_total_steps, running_reward,
                                                     avg_length, self.log_interval, avg_game_duration)
 
         tracker.print_diff()  # to track memory leaks
@@ -413,7 +415,7 @@ class Experiment:
                 'best_test_score': self.best_test_score,
                 'best_test_score_length': self.best_test_score_length,
                 'best_test_score_game': self.best_test_score_game,
-                'total_steps': self.total_steps,
+                'train_total_steps': self.train_total_steps,
                 'total_games': total_games, 'fps': self.env.fps}
         w = csv.writer(open(chkpt_dir + '/rest_info.csv', "w"))
         for key, val in info.items():
@@ -524,15 +526,15 @@ class Experiment:
             print("Unknown mode in update_best_reward")
             exit(1)
 
-    def update_best_score(self, game_score, step_counter, i_game, mode):
+    def update_best_score(self, game_score, step_counter, mode):
         if mode == "train":
             if self.best_train_score < game_score:
                 self.best_train_score = game_score
-                self.best_train_score_game, self.best_train_score_length = i_game, step_counter
+                self.best_train_score_game, self.best_train_score_length = self.train_total_steps, step_counter
         elif mode == "test":
             if self.best_test_score < game_score:
                 self.best_test_score = game_score
-                self.best_test_score_game, self.best_test_score_length = i_game, step_counter
+                self.best_test_score_game, self.best_test_score_length = self.test_total_steps, step_counter
         else:
             print("Unknown mode in update_best_reward")
             exit(1)
