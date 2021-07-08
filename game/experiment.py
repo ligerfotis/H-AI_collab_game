@@ -20,10 +20,6 @@ from pympler.tracker import SummaryTracker
 tracker = SummaryTracker()
 
 
-def get_score(current_timestep):
-    return 200 - current_timestep
-
-
 class Experiment:
     def __init__(self, environment, agent=None, load_models=False, config=None):
         # retrieve parameters
@@ -193,13 +189,6 @@ class Experiment:
 
             running_reward += game_reward  # total running reward. used for logging averages
 
-            # keep track of best game reward and when it occurred
-            self.update_best_reward(game_reward, train_step_counter, i_game, mode="train")
-
-            # keep track of best game score and when it occurred
-            game_score = self.max_score - train_step_counter
-            self.update_best_score(game_score, train_step_counter, i_game, mode="train")
-
             # keep track of total pause duration
             end_game_time = time.time()
             self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration, mode="train")
@@ -246,6 +235,7 @@ class Experiment:
             start_game_time = time.time()  # the timestamp that the game starts
             while True:
                 test_game_step_start_time = time.time()  # the step start time
+                self.test_total_steps += 1
                 test_step_counter += 1  # keep track of the step number for each game
 
                 env_agent_action, real_agent_action = self.get_agent_action(prev_observation, randomness_criterion)
@@ -294,11 +284,6 @@ class Experiment:
 
             # keep track of total pause duration
             end_game_time = time.time()
-            # keep track of best game reward
-            self.update_best_reward(game_reward, test_step_counter, game, mode="test")
-            # keep track of best game score and when it occurred
-            game_score = self.max_score - test_step_counter
-            self.update_best_score(game_score, test_step_counter, game, mode="test")
 
             self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration, mode="test")
 
@@ -523,7 +508,7 @@ class Experiment:
 
         return agent_action
 
-    def update_best_reward(self, game_reward, step_counter, i_game, mode):
+    def update_best_reward(self, game_reward, step_counter, mode):
         """
         Updates the best reward so far
         :param game_reward: current game reward
@@ -532,11 +517,11 @@ class Experiment:
         if mode == "train":
             if self.best_train_reward < game_reward:
                 self.best_train_reward = game_reward
-                self.best_train_reward_game, self.best_train_reward_length = i_game, step_counter
+                self.best_train_reward_game, self.best_train_reward_length = self.train_total_steps, step_counter
         elif mode == "test":
             if self.best_test_reward < game_reward:
                 self.best_test_reward = game_reward
-                self.best_test_reward_game, self.best_test_reward_length = i_game, step_counter
+                self.best_test_reward_game, self.best_test_reward_length = self.test_total_steps, step_counter
         else:
             print("Unknown mode in update_best_reward")
             exit(1)
@@ -561,8 +546,15 @@ class Experiment:
         :return:
         """
         if mode == "train":
+
+            # keep track of best game reward and when it occurred
+            self.update_best_reward(game_reward, current_timestep, mode="train")
+
+            # keep track of best game score and when it occurred
+            score = self.get_score(current_timestep)
+            self.update_best_score(score, current_timestep, mode="train")
+
             # keep track of the game score history
-            score = get_score(current_timestep)
             self.train_scores.append(score)
             # keep track of the game reward history
             self.train_rewards.append(game_reward)
@@ -571,7 +563,12 @@ class Experiment:
             # keep track of the game length in steps
             self.train_steps_per_game.append(current_timestep)
         elif mode == "test":
-            score = get_score(current_timestep)
+            # keep track of best game reward
+            self.update_best_reward(game_reward, current_timestep, mode="test")
+            # keep track of best game score and when it occurred
+            score = self.get_score(current_timestep)
+            self.update_best_score(score, current_timestep, mode="test")
+
             self.test_scores.append(score)
             # keep track of the game reward history
             self.test_rewards.append(game_reward)
@@ -714,3 +711,6 @@ class Experiment:
             agent_action = None
 
         return env_agent_action, agent_action
+
+    def get_score(self, current_timestep):
+        return self.max_score - current_timestep

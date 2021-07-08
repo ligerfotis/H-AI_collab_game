@@ -1,5 +1,5 @@
 game:
-    discrete_input: False # True for Discrete or False for Continuous human input
+    discrete_input: True # True for Discrete or False for Continuous human input
 
     test_model: False # True if no training happens
     checkpoint_name: "sac_20201216_17-25-51" # Date and time of the experiments. Used loading the model created that date (if asked by the user)
@@ -70,7 +70,7 @@ Experiment:
     test_loop:
     update_cycles: 100 # Total number of offline gradient updates throughout the whole experiment
     reward_scale: 2
-    log_interval: 2  # games
+    log_interval: 10  # games
 
   # Test the agent during training
   test_loop:

@@ -97,13 +97,12 @@ def get_plot_and_chkpt_dir(config, participant_name, config_file_name):
             chkpt_dir = 'results/tmp/' + config['SAC']['chkpt_dir']
             plot_dir = 'results/plots/' + config['SAC']['chkpt_dir']
         else:
-            chkpt_dir = 'results/tmp/' + mode + '_' + human_input + '_' + alg + '_' + str(int(
+            header = mode + '_' + human_input + '_' + alg + '_' + str(int(
                 total_number_updates / 1000)) + 'K_every' + str(learn_every) + '_' \
                         + reward_function + '_' + allocation + '_' + participant
+            chkpt_dir = 'results/tmp/' + header
 
-            plot_dir = 'results/plots/' + mode + '_' + alg + '_' + str(int(
-                total_number_updates / 1000)) + 'K_every' + str(learn_every) + '_' \
-                       + reward_function + '_' + allocation + '_' + participant
+            plot_dir = 'results/plots/' + header
         i = 1
         while os.path.exists(chkpt_dir + '_' + str(i)):
             i += 1
