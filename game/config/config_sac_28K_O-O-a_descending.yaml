@@ -55,10 +55,10 @@ Experiment:
     action_duration: 0.2 # Time duration in sec between consecutive RL agent actions
     start_training_step_on_game: 10 # will not train the agent before this trial
     stop_random_agent: 10 # stops using random agent on this trial and start using SAC
-    learn_every_n_games: 10 # Perform offline gradient updates after every `learn_every_n_games` episodes
+    learn_every_n_games: 5 # Perform offline gradient updates after every `learn_every_n_games` episodes
     total_update_cycles: 60000 # Total number of offline gradient updates throughout the whole experiment
     reward_scale: 2
-    log_interval: 10  # print avg reward in the interval
+    log_interval: 5  # print avg reward in the interval
 
   max_interactions_mode:
     total_timesteps: 3500  # Total number of interactions per game
@@ -74,7 +74,7 @@ Experiment:
 
   # Test the agent during training
   test_loop:
-    max_games: 10 # total test games during each test session
+    max_games: 5 # total test games during each test session
     max_duration: 30 # max duration per test game in seconds
     action_duration: 0.2 # Time duration between consecutive RL agent actions
     max_score: 200
