@@ -36,8 +36,8 @@ class Maze3D:
         print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
         self.ip_host = "https://maze-server.app.orbitsystems.gr"
-        self.outer_host = "http://maze3d.duckdns.org:8080"
-        # self.outer_host = "http://localhost:8080"
+        # self.outer_host = "http://maze3d.duckdns.org:8080"
+        self.outer_host = "http://localhost:8080"
 
         # self.host = "http://79.129.14.204:8080"
         # self.host = "http://maze3d.duckdns.org:8080"
