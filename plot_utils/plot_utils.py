@@ -200,7 +200,7 @@ def plot_metrics(experiment, plot_dir):
     """
     plot_mean_sem(experiment.train_interval, experiment.train_scores, plot_dir + "/train_score_mean_sem.png",
                   "Training Scores")
-    plot_mean_sem(experiment.test_interval, experiment.test_scores, plot_dir + "/test_score_mean_sem.png",
+    plot_mean_sem(experiment.test_max_games, experiment.test_scores, plot_dir + "/test_score_mean_sem.png",
                   "Testing Scores")
 
     plot(experiment.train_step_duration_list, plot_dir + "/train_game_step_durations.png",
