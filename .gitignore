@@ -1,3 +1,4 @@
 # Project exclude paths
 /venv/
 /results/
+/plot_utils/plot_multiple_curves.py

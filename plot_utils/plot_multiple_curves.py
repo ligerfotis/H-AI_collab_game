@@ -134,7 +134,9 @@ def plot(filename_list, legend_names, figure_file=None):
 # plot([[file_1f, file_2f, file_3f, file_1t, file_2t, file_3t],
 #       [file_1, file_2]], legend_names, figure_file=dir + "old_vs_new.png")
 
-plot([[file_3], [file_4]], legend_names, figure_file=dir + "40s_vs_30s_v2.png")
+# plot([[file_3], [file_4]], legend_names, figure_file=dir + "40s_vs_30s_v2.png")
+
+plot([[file_3], [file_4]], legend_names, figure_file=dir + "internet_delay.png")
 
 # plot([[file_1f, file_2f, file_3f, file_1t, file_2t, file_3t], [file_1, file_2], [file_3]], legend_names, figure_file=dir + "maze_versions.png")
 # plot([[file_4],[file_1c], [file_1p]], legend_names, figure_file=dir + "expert_vs_novel_users_40games.png")
