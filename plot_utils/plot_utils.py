@@ -203,6 +203,11 @@ def plot_metrics(experiment, plot_dir):
     plot_mean_sem(experiment.test_max_games, experiment.test_scores, plot_dir + "/test_score_mean_sem.png",
                   "Testing Scores")
 
+    plot(experiment.train_game_durations, plot_dir + "/train_game_durations.png",
+         x=[i + 1 for i in range(len(experiment.train_game_durations))])
+    plot(experiment.test_game_durations, plot_dir + "/test_game_durations.png",
+         x=[i + 1 for i in range(len(experiment.test_game_durations))])
+
     plot(experiment.train_step_duration_list, plot_dir + "/train_game_step_durations.png",
          x=[i + 1 for i in range(len(experiment.train_step_duration_list))])
     plot(experiment.test_step_duration_list, plot_dir + "/test_game_step_durations.png",

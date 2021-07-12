@@ -35,7 +35,7 @@ SAC:
 Experiment:
   start_with_testing_random_agent: False # True to start experiment with testing human with random agent
   online_updates: True # True if a single gradient update happens after every state transition
-  test_intserval: 10  # the interval of testing sessions
+  test_interval: 10  # the interval of testing sessions
 
   # offline gradient updates allocation
   # Normal: allocates evenly the total number of updates through each session
