@@ -35,7 +35,7 @@ SAC:
 Experiment:
   start_with_testing_random_agent: False # True to start experiment with testing human with random agent
   online_updates: True # True if a single gradient update happens after every state transition
-  test_interval: 10  # the interval of testing sessions
+  test_interval: 2  # the interval of testing sessions
 
   # offline gradient updates allocation
   # Normal: allocates evenly the total number of updates through each session
@@ -49,16 +49,16 @@ Experiment:
   mode: max_games_mode   # Choose max_games_mode or max_interactions_mode
 
   max_games_mode:
-    max_games: 40  # max training games per experiment
-    max_duration: 30 # max duration per game in seconds
+    max_games: 4  # max training games per experiment
+    max_duration: 1 # max duration per game in seconds
     buffer_memory_size: 100000000
     action_duration: 0.2 # Time duration in sec between consecutive RL agent actions
-    start_training_step_on_game: 10 # will not train the agent before this trial
-    stop_random_agent: 10 # stops using random agent on this trial and start using SAC
-    learn_every_n_games: 5 # Perform offline gradient updates after every `learn_every_n_games` episodes
-    total_update_cycles: 60000 # Total number of offline gradient updates throughout the whole experiment
+    start_training_step_on_game: 2 # will not train the agent before this trial
+    stop_random_agent: 2 # stops using random agent on this trial and start using SAC
+    learn_every_n_games: 2 # Perform offline gradient updates after every `learn_every_n_games` episodes
+    total_update_cycles: 600 # Total number of offline gradient updates throughout the whole experiment
     reward_scale: 2
-    log_interval: 10  # print avg reward in the interval
+    log_interval: 2  # print avg reward in the interval
 
   max_interactions_mode:
     total_timesteps: 3500  # Total number of interactions per game
@@ -74,8 +74,8 @@ Experiment:
 
   # Test the agent during training
   test_loop:
-    max_games: 5 # total test games during each test session
-    max_duration: 30 # max duration per test game in seconds
+    max_games: 2 # total test games during each test session
+    max_duration: 1 # max duration per test game in seconds
     action_duration: 0.2 # Time duration between consecutive RL agent actions
     max_score: 200
 

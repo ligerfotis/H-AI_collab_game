@@ -1,0 +1,8 @@
+ip_distributor: "https://maze-server.app.orbitsystems.gr"
+maze_server: "http://maze3d.duckdns.org:8080"
+#maze_server: "http://localhost:8080"
+
+#maze_rl: "http://79.129.14.204:8080"
+#maze_rl: "http://maze3d.duckdns.org:8080"
+#maze_rl: "http://panos-server.duckdns.org:8080"
+maze_rl: "http://localhost:8080"

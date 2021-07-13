@@ -93,6 +93,8 @@ class Experiment:
         # initialize train and test transition dataframes
         self.train_transitions_df = pd.DataFrame(columns=column_names)
         self.test_transitions_df = pd.DataFrame(columns=column_names)
+        # learning metrics
+        self.policy_loss_list, self.q1_loss_list, self.q2_loss_list, self.entropy_loss_list = [], [], [], []
 
     def max_games_mode(self):
         """
@@ -452,7 +454,12 @@ class Experiment:
             for cycle_i in tqdm(range(update_cycles)):
                 if self.isAgent_discrete:
                     # train the agent's networks
-                    self.agent.learn()
+                    _, _, _, policy_loss, q1_loss, q2_loss, entropy_loss = self.agent.learn()
+                    self.policy_loss_list.append(policy_loss)
+                    self.q1_loss_list.append(q1_loss)
+                    self.q2_loss_list.append(q2_loss)
+                    self.entropy_loss_list.append(entropy_loss)
+
                     # update the target networks
                     self.agent.soft_update_target()
                 # continuous SAC agent

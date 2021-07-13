@@ -98,7 +98,7 @@ class DiscreteSACAgent:
         update_params(self.actor_optim, policy_loss)
         update_params(self.alpha_optim, entropy_loss)
 
-        return mean_q1, mean_q2, entropies
+        return mean_q1, mean_q2, entropies, policy_loss, q1_loss, q2_loss, entropy_loss
 
     def update_target(self):
         self.target_critic.load_state_dict(self.critic.state_dict())

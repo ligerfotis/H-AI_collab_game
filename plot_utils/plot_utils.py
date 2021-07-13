@@ -1,4 +1,3 @@
-import numpy as np
 import os
 import seaborn as sns
 import numpy as np
@@ -190,6 +189,11 @@ def save_metrics(experiment, save_dir):
     # Internet Delay
     np.savetxt(save_dir + '/internet_delay.csv', experiment.env.internet_delay, delimiter=',')
 
+    # learning metrics
+    np.savetxt(save_dir + '/policy_loss_list.csv', experiment.policy_loss_list, delimiter=',')
+    np.savetxt(save_dir + '/q1_loss_list.csv', experiment.q1_loss_list, delimiter=',')
+    np.savetxt(save_dir + '/q2_loss_list.csv', experiment.q2_loss_list, delimiter=',')
+    np.savetxt(save_dir + '/entropy_loss_list.csv', experiment.entropy_loss_list, delimiter=',')
 
 def plot_metrics(experiment, plot_dir):
     """
@@ -198,6 +202,7 @@ def plot_metrics(experiment, plot_dir):
     :param plot_dir: the directory to save the ploted metrics in
     :return:
     """
+    # plot the score mean and sem
     plot_mean_sem(experiment.train_interval, experiment.train_scores, plot_dir + "/train_score_mean_sem.png",
                   "Training Scores")
     plot_mean_sem(experiment.test_max_games, experiment.test_scores, plot_dir + "/test_score_mean_sem.png",
@@ -239,10 +244,18 @@ def plot_metrics(experiment, plot_dir):
     plot(experiment.env.internet_delay, plot_dir + "/internet_delay.png",
          x=[i + 1 for i in range(len(experiment.env.internet_delay))])
 
+    # plot the reward mean and sem
     plot_mean_sem(experiment.train_interval, experiment.train_rewards, plot_dir + "/train_reward_mean_sem.png",
                   "Training Scores")
     plot_mean_sem(experiment.test_interval, experiment.test_rewards, plot_dir + "/test_reward_mean_sem.png",
                   "Testing Scores")
 
+    # plot number of steps per game
     plot(experiment.train_steps_per_game, plot_dir + "/train_steps_per_game.png", x=[i + 1 for i in range(len(experiment.train_steps_per_game))])
     plot(experiment.test_steps_per_game, plot_dir + "/test_steps_per_game.png", x=[i + 1 for i in range(len(experiment.test_steps_per_game))])
+
+    # plot learning curves
+    plot(experiment.policy_loss_list, plot_dir + "/policy_loss_list.png", x=[i + 1 for i in range(len(experiment.policy_loss_list))])
+    plot(experiment.q1_loss_list, plot_dir + "/q1_loss_list.png", x=[i + 1 for i in range(len(experiment.q1_loss_list))])
+    plot(experiment.q2_loss_list, plot_dir + "/q2_loss_list.png", x=[i + 1 for i in range(len(experiment.q2_loss_list))])
+    plot(experiment.entropy_loss_list, plot_dir + "/entropy_loss_list.png", x=[i + 1 for i in range(len(experiment.entropy_loss_list))])

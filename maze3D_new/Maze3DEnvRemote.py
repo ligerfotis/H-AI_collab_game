@@ -35,14 +35,12 @@ class Maze3D:
     def __init__(self, config=None, config_file=None):
         print("Init Maze3D")
         self.config = get_config(config_file) if config_file is not None else config
-        self.ip_host = "https://maze-server.app.orbitsystems.gr"
-        self.outer_host = "http://maze3d.duckdns.org:8080"
-        # self.outer_host = "http://localhost:8080"
+        self.network_config = get_config("game/network_config.yaml")
+        self.ip_host = self.network_config["ip_distributor"]
+        self.outer_host = self.network_config["maze_server"]
+        self.host = self.network_config["maze_rl"]
 
-        # self.host = "http://79.129.14.204:8080"
-        # self.host = "http://maze3d.duckdns.org:8080"
-        # self.host = 'http://panos-server.duckdns.org:8080'
-        self.host = "http://localhost:8080"
+        # self.host = "http://localhost:8080"
         self.action_space = ActionSpace()
         self.fps = 60
         self.done = False
@@ -171,80 +169,3 @@ if __name__ == '__main__':
                 maze.step(random.randint(-1, 1), None, None, 200)
         except:
             traceback.print_exc()
-
-
-def save_logs_and_plot(experiment, chkpt_dir, plot_dir, max_games):
-    # score_history a list with the reward for each episode
-    x = [i + 1 for i in range(len(experiment.score_history))]
-    np.savetxt(chkpt_dir + '/scores.csv', np.asarray(experiment.score_history), delimiter=',')
-
-    # action_history as returned by get_action_pair: a dyad agent and human {-1,0,1}
-    actions = np.asarray(experiment.action_history)
-
-    x_actions = [i + 1 for i in range(len(actions))]
-    # Save logs in files
-    np.savetxt(chkpt_dir + '/actions.csv', actions, delimiter=',')
-    # np.savetxt('tmp/sac_' + timestamp + '/action_side.csv', action_side, delimiter=',')
-    np.savetxt(chkpt_dir + '/epidode_durations.csv', np.asarray(experiment.game_duration_list), delimiter=',')
-
-    np.savetxt(chkpt_dir + '/game_step_durations.csv', np.asarray(experiment.train_step_duration_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/online_update_durations.csv', np.asarray(experiment.online_update_durations),
-               delimiter=',')
-    np.savetxt(chkpt_dir + '/total_fps.csv', np.asarray(experiment.total_fps_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/train_fps.csv', np.asarray(experiment.train_fps_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/test_fps.csv', np.asarray(experiment.test_fps_list), delimiter=',')
-
-    np.savetxt(chkpt_dir + '/distance_travel.csv', np.asarray(experiment.distance_travel_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/distance_travel_test.csv', np.asarray(experiment.test_distance_travel_list), delimiter=',')
-    np.savetxt(chkpt_dir + '/pure_rewards.csv', experiment.reward_list, delimiter=',')
-    np.savetxt(chkpt_dir + '/pure_rewards_test.csv', experiment.test_reward_list, delimiter=',')
-
-    np.savetxt(chkpt_dir + '/grad_updates_durations.csv', experiment.grad_updates_durations, delimiter=',')
-
-    # test_game_number logs
-    np.savetxt(chkpt_dir + '/test_episode_duration_list.csv', experiment.test_game_duration_list, delimiter=',')
-    np.savetxt(chkpt_dir + '/test_score_history.csv', experiment.test_score_history, delimiter=',')
-    np.savetxt(chkpt_dir + '/test_length_list.csv', experiment.test_length_list, delimiter=',')
-
-    # plot_learning_curve(x, experiment.score_history, plot_dir + "/train_scores.png")
-    plot(experiment.length_list, plot_dir + "/train_length.png", x=[i + 1 for i in range(max_games)])
-    plot(experiment.game_duration_list, plot_dir + "/train_game_durations.png", x=[i + 1 for i in range(max_games)])
-
-    plot(experiment.train_step_duration_list, plot_dir + "/train_game_step_durations.png",
-         x=[i + 1 for i in range(len(experiment.train_step_duration_list))])
-    plot(experiment.test_step_duration_list, plot_dir + "/test_game_step_durations.png",
-         x=[i + 1 for i in range(len(experiment.test_step_duration_list))])
-
-    plot(experiment.online_update_durations, plot_dir + "/online_updates_durations.png",
-         x=[i + 1 for i in range(len(experiment.online_update_durations))])
-    plot(experiment.total_fps_list, plot_dir + "/total_fps.png",
-         x=[i + 1 for i in range(len(experiment.total_fps_list))])
-    plot(experiment.train_fps_list, plot_dir + "/train_fps.png",
-         x=[i + 1 for i in range(len(experiment.train_fps_list))])
-    plot(experiment.test_fps_list, plot_dir + "/test_fps.png",
-         x=[i + 1 for i in range(len(experiment.test_fps_list))])
-
-    plot(experiment.grad_updates_durations, plot_dir + "/grad_updates_durations.png",
-         x=[i + 1 for i in range(len(experiment.grad_updates_durations))])
-
-    # plot game logs
-    # todo: not working properly
-    plot_test_score(experiment.test_score_history, plot_dir + "/test_scores.png")
-    plot(experiment.test_length_list, plot_dir + "/test_length.png",
-         x=[i + 1 for i in range(len(experiment.test_length_list))])
-    plot(experiment.test_game_duration_list, plot_dir + "/test_game_duration.png",
-         x=[i + 1 for i in range(len(experiment.test_game_duration_list))])
-
-    # todo: not working properly
-    x = [i + 1 for i in range(experiment.max_games)]
-    plot_learning_curve(x, experiment.reward_list, plot_dir + "/rewards_train.png")
-    x = [i + 1 for i in range(int(experiment.test_max_games * experiment.max_games / experiment.test_interval))]
-    plot_learning_curve(x, experiment.test_reward_list, plot_dir + "/rewards_test.png")
-
-    plot_mean_sem(experiment.test_max_games, experiment.test_score_history, plot_dir + "/score_mean_sem.png",
-                  "Testing Scores")
-    try:
-        # todo: not working properly
-        plot_test_score(experiment.test_score_history, plot_dir + "/test_scores_mean_std.png")
-    except:
-        print("An exception occurred while plotting")
