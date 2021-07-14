@@ -112,8 +112,10 @@ class Maze3D:
         # print("reset")
         start_time = time.time()
         res = self.send("/reset")
-        print("reset time:", time.time() - start_time)
-        return np.array(res['observation']), res['setting_up_duration']
+        set_up_time = time.time() - start_time
+        print("reset time:", set_up_time)
+        # return np.array(res['observation']), res['setting_up_duration']
+        return np.asarray(res['observation']), set_up_time
 
     def training(self, cycle, total_cycles):
         self.send("/training", "POST", {'cycle': cycle, 'total_cycles': total_cycles})
@@ -147,7 +149,7 @@ class Maze3D:
         res = self.send("/step", method="POST", data=payload)
         delay = time.time() - start_time
         self.internet_delay.append(delay)
-        print(delay)
+        # print(delay)
         self.observation = np.array(res['observation'])
         self.done = res['done']  # true if goal_reached OR timeout
         fps = res['fps']
@@ -157,7 +159,7 @@ class Maze3D:
 
         reward = reward_function_timeout_penalty(self.done, timed_out)
 
-        return self.observation, reward, self.done, fps, duration_pause, [agent_action, human_action]
+        return self.observation, reward, self.done, fps, delay-action_duration, [agent_action, human_action]
 
 
 if __name__ == '__main__':

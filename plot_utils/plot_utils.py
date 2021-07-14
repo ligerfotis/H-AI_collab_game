@@ -182,6 +182,10 @@ def save_metrics(experiment, save_dir):
     np.savetxt(save_dir + '/train_fps.csv', experiment.train_fps_list, delimiter=',')
     np.savetxt(save_dir + '/test_fps.csv', experiment.test_fps_list, delimiter=',')
 
+    # Train/Test Step Durations per Game
+    np.savetxt(save_dir + '/train_step_durations.csv', experiment.train_step_duration_list, delimiter=',')
+    np.savetxt(save_dir + '/test_step_durations.csv', experiment.test_step_duration_list, delimiter=',')
+
     # Train/Test Steps per Game
     np.savetxt(save_dir + '/train_steps_per_game.csv', experiment.train_steps_per_game, delimiter=',')
     np.savetxt(save_dir + '/test_steps_per_game.csv', experiment.test_steps_per_game, delimiter=',')
@@ -190,10 +194,10 @@ def save_metrics(experiment, save_dir):
     np.savetxt(save_dir + '/internet_delay.csv', experiment.env.internet_delay, delimiter=',')
 
     # learning metrics
-    np.savetxt(save_dir + '/policy_loss_list.csv', experiment.policy_loss_list, delimiter=',')
-    np.savetxt(save_dir + '/q1_loss_list.csv', experiment.q1_loss_list, delimiter=',')
-    np.savetxt(save_dir + '/q2_loss_list.csv', experiment.q2_loss_list, delimiter=',')
-    np.savetxt(save_dir + '/entropy_loss_list.csv', experiment.entropy_loss_list, delimiter=',')
+    # np.savetxt(save_dir + '/policy_loss_list.csv', experiment.policy_loss_list, delimiter=',')
+    # np.savetxt(save_dir + '/q1_loss_list.csv', experiment.q1_loss_list, delimiter=',')
+    # np.savetxt(save_dir + '/q2_loss_list.csv', experiment.q2_loss_list, delimiter=',')
+    # np.savetxt(save_dir + '/entropy_loss_list.csv', experiment.entropy_loss_list, delimiter=',')
 
 def plot_metrics(experiment, plot_dir):
     """
@@ -254,8 +258,8 @@ def plot_metrics(experiment, plot_dir):
     plot(experiment.train_steps_per_game, plot_dir + "/train_steps_per_game.png", x=[i + 1 for i in range(len(experiment.train_steps_per_game))])
     plot(experiment.test_steps_per_game, plot_dir + "/test_steps_per_game.png", x=[i + 1 for i in range(len(experiment.test_steps_per_game))])
 
-    # plot learning curves
-    plot(experiment.policy_loss_list, plot_dir + "/policy_loss_list.png", x=[i + 1 for i in range(len(experiment.policy_loss_list))])
-    plot(experiment.q1_loss_list, plot_dir + "/q1_loss_list.png", x=[i + 1 for i in range(len(experiment.q1_loss_list))])
-    plot(experiment.q2_loss_list, plot_dir + "/q2_loss_list.png", x=[i + 1 for i in range(len(experiment.q2_loss_list))])
-    plot(experiment.entropy_loss_list, plot_dir + "/entropy_loss_list.png", x=[i + 1 for i in range(len(experiment.entropy_loss_list))])
+    # # plot learning curves
+    # plot(experiment.policy_loss_list, plot_dir + "/policy_loss_list.png", x=[i + 1 for i in range(len(experiment.policy_loss_list))])
+    # plot(experiment.q1_loss_list, plot_dir + "/q1_loss_list.png", x=[i + 1 for i in range(len(experiment.q1_loss_list))])
+    # plot(experiment.q2_loss_list, plot_dir + "/q2_loss_list.png", x=[i + 1 for i in range(len(experiment.q2_loss_list))])
+    # plot(experiment.entropy_loss_list, plot_dir + "/entropy_loss_list.png", x=[i + 1 for i in range(len(experiment.entropy_loss_list))])
