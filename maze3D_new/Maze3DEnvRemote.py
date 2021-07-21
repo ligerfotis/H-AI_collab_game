@@ -59,9 +59,9 @@ class Maze3D:
                 config['discrete_input'] = self.config['game']['discrete_input']
                 config['max_duration'] = self.config['Experiment']['max_games_mode']['max_duration']
                 config['action_duration'] = self.config['Experiment']['max_games_mode']['action_duration']
-                config['human_speed'] = 35
-                config['agent_speed'] = 35
-                config['discrete_angle_change'] = 3
+                config['human_speed'] = self.config['game']['human_speed']
+                config['agent_speed'] = self.config['game']['agent_speed']
+                config['discrete_angle_change'] = self.config['game']['discrete_angle_change']
                 config['human_assist'] = False
                 config['start_up_screen_display_duration'] = self.config['GUI']['start_up_screen_display_duration']
                 config['popup_window_time'] = self.config['GUI']['popup_window_time']
@@ -149,17 +149,16 @@ class Maze3D:
         res = self.send("/step", method="POST", data=payload)
         delay = time.time() - start_time
         self.internet_delay.append(delay)
-        # print(delay)
         self.observation = np.array(res['observation'])
         self.done = res['done']  # true if goal_reached OR timeout
         fps = res['fps']
         human_action = res['human_action']
         agent_action = res['agent_action']
         duration_pause = res['duration_pause']
-
+        internet_pause = delay - duration_pause - action_duration
         reward = reward_function_timeout_penalty(self.done, timed_out)
 
-        return self.observation, reward, self.done, fps, delay-action_duration, [agent_action, human_action]
+        return self.observation, reward, self.done, fps, duration_pause, [agent_action, human_action], internet_pause
 
 
 if __name__ == '__main__':

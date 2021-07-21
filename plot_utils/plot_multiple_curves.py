@@ -5,22 +5,37 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 dir = "results/figures/"
+
+file_1 = 'results/tmp/max_games_mode_continuous_O_O_a_28K_every10_Shafti_descending_expert_remote_3/test_scores.csv'
+file_2 = 'results/tmp/max_games_mode_continuous_O_O_a_28K_every10_Shafti_descending_expert_remote_4/test_scores.csv'
+
+# file_e1_10_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_1/test_scores.csv'
+# file_e1_10_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_2/test_scores.csv'
+# file_e1_10_3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_3/test_scores.csv'
+# file_e1_10_4 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_4/test_scores.csv'
+#
+# file_e1_5_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_1/test_scores.csv'
+# file_e1_5_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_2/test_scores.csv'
+# file_e1_5_3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_3/test_scores.csv'
+# file_e1_5_4 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_4/test_scores.csv'
+
+
 # file_local_e2 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_fotis_local_1/test_scores.csv'
 
-file_online_e1_c = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_fotis_remote_1/test_scores.csv'
-# file_online_e2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_fotis_remote_2/test_scores.csv'
-# file_local_e3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_fotis_40_local_1/test_scores.csv'
-file_local_e1_d = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_fotis_local_1/test_scores.csv'
+# file_online_e1_c = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_fotis_remote_1/test_scores.csv'
+# # file_online_e2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_fotis_remote_2/test_scores.csv'
+# # file_local_e3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_fotis_40_local_1/test_scores.csv'
+# file_local_e1_d = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_fotis_local_1/test_scores.csv'
 
 # file_local_p2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_christina_local_1/test_scores.csv'
 # file_online_p2_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_christina_online_1/test_scores.csv'
 # file_online_p2_2 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_christina_online_1/test_scores.csv'
 
-file_p2_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_participant_2_remote_1/test_scores.csv'
-file_p2_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_participant_2_remote_2/test_scores.csv'
+# file_p2_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_participant_2_remote_1/test_scores.csv'
+# file_p2_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_participant_2_remote_2/test_scores.csv'
 # file_p2_3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_participant_2_remote_1/test_scores.csv'
 # file_p2_4 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_participant_2_local_1/test_scores.csv'
-file_p2_5 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every5_Shafti_descending_participant_2_remote_1/test_scores.csv'
+# file_p2_5 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every5_Shafti_descending_participant_2_remote_1/test_scores.csv'
 # file_p2_6 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_participant_2_remote_1/test_scores.csv'
 
 # file_p1_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_participant_1_remote_1/test_scores.csv'
@@ -44,10 +59,11 @@ file_p2_5 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every5_Shafti_descend
 # legend_names = ["O-O-a 60K Expert online learn every 5", "O-O-a 60K Expert online learn every 10 Trial:1", "O-O-a 60K Expert online learn every 10 Trial:2",
 #                 "O-O-a 60K Participant 1 online learn every 10", "O-O-a 60K Participant 2 online learn every 10 Trial:1",
 #                 "O-O-a 60K Participant 2 online learn every 10 Trial:2"]
-legend_names = ["O-O-a-5 60K Expert continuous",
-                "O-O-a-5 60K Expert discrete",
-                "O-O-a-5 60K Participant 2 continuous (avg 2 runs)",
-                "O-O-a-5 60K Participant 2 discrete"]
+# legend_names = ["O-O-a-5 60K Expert continuous",
+#                 "O-O-a-5 60K Expert discrete",
+#                 "O-O-a-5 60K Participant 2 continuous (avg 2 runs)",
+#                 "O-O-a-5 60K Participant 2 discrete"]
+legend_names = ["O-O-a 28K Expert every 10 Trial:1", "O-O-a 28K Expert every 10 Trial:2"]
 
 # filename_list_1 = [file_name_1, file_name_2]
 # filename_list_2 = [file_name_3, file_name_4]
@@ -56,7 +72,7 @@ legend_names = ["O-O-a-5 60K Expert continuous",
 # colors_light = ["limegreen", "cornflowerblue", "lightcoral", "violet", "slateblue", "wheat"]
 
 fill = True
-start = 40
+start = 0
 end = 205
 
 
@@ -74,16 +90,13 @@ def plot(filename_list, legend_names, figure_file=None):
             # random = np.genfromtxt(random_file, delimiter=',')
             # means, stds, x_axis = [mean(random)], [stdev(random) / sqrt(len(random))], [0]
             means, stds, x_axis = [], [], []
-            for i in range(0, len(merge_lists[0]), int(len(my_data)/5)):
+            for i in range(0, len(merge_lists[0]), 10):
                 data = []
                 for file_to_merge in merge_lists:
-                    data.extend(file_to_merge[i:i + int(len(my_data)/5)])
+                    data.extend(file_to_merge[i:i + 10])
                 means.append(mean(data))
                 stds.append(stdev(data) / sqrt(len(data)))
-                if int(len(my_data)/5) == 5:
-                    x_axis.append(i*2)
-                else:
-                    x_axis.append(i)
+                x_axis.append(i)
 
             means, stds, x_axis = np.asarray(means), np.asarray(stds), np.asarray(x_axis)
             # meanst = np.array(means.ix[i].values[3:-1], dtype=np.float64)
@@ -109,7 +122,7 @@ def plot(filename_list, legend_names, figure_file=None):
 
 # plot([[file_3], [file_4]], legend_names, figure_file=dir + "40s_vs_30s_v2.png")
 
-plot([[file_online_e1_c], [file_local_e1_d], [file_p2_1, file_p2_2], [file_p2_5]], legend_names, figure_file=dir + "expert_and_participant_2_cont_vs_discrete.png")
+plot([[file_1], [file_2]], legend_names, figure_file=dir + "maze_big_hole.png")
 
 # plot([[file_1f, file_2f, file_3f, file_1t, file_2t, file_3t], [file_1, file_2], [file_3]], legend_names, figure_file=dir + "maze_versions.png")
 # plot([[file_4],[file_1c], [file_1p]], legend_names, figure_file=dir + "expert_vs_novel_users_40games.png")

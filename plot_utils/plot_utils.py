@@ -149,6 +149,8 @@ def save_metrics(experiment, save_dir):
     # Train/TestScores(.csv)
     np.savetxt(save_dir + '/train_scores.csv', experiment.train_scores, delimiter=',')
     np.savetxt(save_dir + '/test_scores.csv', experiment.test_scores, delimiter=',')
+    np.savetxt(save_dir + '/train_time_scores.csv', experiment.train_time_scores, delimiter=',')
+    np.savetxt(save_dir + '/test_time_scores.csv', experiment.test_time_scores, delimiter=',')
 
     # Train/Test Game durations(.csv)
     np.savetxt(save_dir + '/train_game_durations.csv', experiment.train_game_durations, delimiter=',')
@@ -211,6 +213,12 @@ def plot_metrics(experiment, plot_dir):
                   "Training Scores")
     plot_mean_sem(experiment.test_max_games, experiment.test_scores, plot_dir + "/test_score_mean_sem.png",
                   "Testing Scores")
+
+    # plot the score mean and sem
+    plot_mean_sem(experiment.train_interval, experiment.train_time_scores, plot_dir + "/train_time_scores_mean_sem.png",
+                  "Training Time Scores")
+    plot_mean_sem(experiment.test_max_games, experiment.test_time_scores, plot_dir + "/test_time_scores_mean_sem.png",
+                  "Testing Time Scores")
 
     plot(experiment.train_game_durations, plot_dir + "/train_game_durations.png",
          x=[i + 1 for i in range(len(experiment.train_game_durations))])

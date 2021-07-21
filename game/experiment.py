@@ -52,7 +52,6 @@ class Experiment:
             self.train_interval = config['Experiment'][self.mode]['learn_every_n_games']
             self.popup_window_time = config['GUI']['popup_window_time']
 
-
         # fps tracking
         self.train_fps_list, self.test_fps_list, self.total_fps_list = [], [], []
 
@@ -95,6 +94,7 @@ class Experiment:
         self.test_transitions_df = pd.DataFrame(columns=column_names)
         # learning metrics
         self.policy_loss_list, self.q1_loss_list, self.q2_loss_list, self.entropy_loss_list = [], [], [], []
+        self.train_time_scores, self.test_time_scores = [], []
 
     def max_games_mode(self):
         """
@@ -118,7 +118,6 @@ class Experiment:
             self.flag = True
 
         for i_game in range(1, self.max_games + 1):
-            # print("Resuming Training")
             prev_observation, setting_up_duration = self.env.reset()  # stores the state of the environment
             timed_out = False  # used to check if we hit the maximum train_game_number duration
             game_reward = 0  # keeps track of the rewards for each train_game_number
@@ -130,23 +129,24 @@ class Experiment:
             redundant_end_duration = 0  # duration in the game that is not playable by the user
             train_step_counter = 0
             start_game_time = time.time()
-            # 1. Training Session
+            # 1. Trainaing Session
             while True:
                 train_game_start_time = time.time()
                 self.train_total_steps += 1
                 train_step_counter += 1  # keep track of the step number for each game
+                # print("train_step_counter {}".format(train_step_counter))
 
                 env_agent_action, real_agent_action = self.get_agent_action(prev_observation, i_game)
-
-                # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.action_duration, mode='train')
-                observation, reward, done, train_fps, duration_pause, action_pair = transition
-
-                redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 # check if the game has timed out
                 if time.time() - start_game_time - redundant_end_duration >= self.max_game_duration:
                     timed_out = True
+
+                # Environment step
+                transition = self.env.step(env_agent_action, timed_out, self.action_duration, mode='train')
+                observation, reward, done, train_fps, duration_pause, action_pair, internet_delay = transition
+
+                redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 # keep track of the fps
                 self.train_fps_list.append(train_fps)
@@ -170,7 +170,8 @@ class Experiment:
                 # append row to the dataframe
                 # "prev_observation", "real_agent_action", "env_egent_action", "human_action", "observation", "reward"
 
-                new_row = get_row_to_store(prev_observation, real_agent_action, env_agent_action, action_pair[1], observation, reward)
+                new_row = get_row_to_store(prev_observation, real_agent_action, env_agent_action, action_pair[1],
+                                           observation, reward)
                 # todo: save transition
                 self.train_transitions_df = self.train_transitions_df.append(new_row, ignore_index=True)
 
@@ -180,7 +181,6 @@ class Experiment:
 
                 # set the observation for the next step
                 prev_observation = observation
-                print("redundant_end_duration {}".format(redundant_end_duration))
 
                 # the ball has either reached the goal or the game has timed out
                 if done:
@@ -196,10 +196,12 @@ class Experiment:
 
             # keep track of total pause duration
             end_game_time = time.time()
-            self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration, mode="train")
+            game_duration = self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration,
+                                                     mode="train")
 
             # update metrics about the experiment
-            self.update_metrics(game_reward, train_distance_travel, train_step_counter, mode="train")
+            self.update_metrics(game_reward, train_distance_travel, train_step_counter, timed_out, game_duration,
+                                mode="train")
 
             # 2. Offline gradient updates session
             self.offline_grad_updates_session(i_game)
@@ -213,10 +215,11 @@ class Experiment:
             avg_game_duration = np.mean(self.train_game_durations[-self.log_interval:])
             running_reward, avg_length = print_logs(self.config["game"]["verbose"],
                                                     self.config['game']['test_model'],
-                                                    self.train_total_steps, i_game, self.train_total_steps, running_reward,
+                                                    self.train_total_steps, i_game, self.train_total_steps,
+                                                    running_reward,
                                                     avg_length, self.log_interval, avg_game_duration)
 
-        tracker.print_diff()  # to track memory leaks
+        # tracker.print_diff()  # to track memory leaks
 
     def test_max_games_mode(self, randomness_criterion):
         """
@@ -237,23 +240,23 @@ class Experiment:
             game_reward = 0  # the cumulative game reward
             test_distance_travel = 0  # the distance that the ball travels
             redundant_end_duration = 0  # duration in the train_game_number that is not playable by the user
-            test_step_counter = 0   # keep track of the step number for each game
+            test_step_counter = 0  # keep track of the step number for each game
 
             start_game_time = time.time()  # the timestamp that the game starts
             while True:
                 # test_game_step_start_time = time.time()  # the step start time
                 self.test_total_steps += 1
                 test_step_counter += 1  # keep track of the step number for each game
-
+                # print("test_step_counter {}".format(test_step_counter))
                 env_agent_action, real_agent_action = self.get_agent_action(prev_observation, randomness_criterion)
-
-                # Environment step
-                transition = self.env.step(env_agent_action, timed_out, self.test_action_duration, mode='test')
-                observation, reward, done, test_fps, duration_pause, action_pair = transition
-                redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 if time.time() - start_game_time - redundant_end_duration >= self.test_max_duration:
                     timed_out = True
+
+                # Environment step
+                transition = self.env.step(env_agent_action, timed_out, self.test_action_duration, mode='test')
+                observation, reward, done, test_fps, duration_pause, action_pair, internet_delay = transition
+                redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 # keep track of the fps
                 self.test_fps_list.append(test_fps)
@@ -266,7 +269,8 @@ class Experiment:
                 test_distance_travel = get_distance_traveled(test_distance_travel, prev_observation, observation)
 
                 # append row to the dataframe
-                new_row = get_row_to_store(prev_observation, real_agent_action, env_agent_action, action_pair[1], observation, reward)
+                new_row = get_row_to_store(prev_observation, real_agent_action, env_agent_action, action_pair[1],
+                                           observation, reward)
                 self.test_transitions_df = self.test_transitions_df.append(new_row, ignore_index=True)
 
                 # calculate game step duration
@@ -291,15 +295,17 @@ class Experiment:
 
             # keep track of total pause duration
             end_game_time = time.time()
-            self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration, mode="test")
+            game_duration = self.update_time_metrics(start_game_time, end_game_time, redundant_end_duration,
+                                                     mode="test")
 
             # update metrics about the experiment
-            self.update_metrics(game_reward, test_distance_travel, test_step_counter, mode="test")
+            self.update_metrics(game_reward, test_distance_travel, test_step_counter, timed_out, game_duration,
+                                mode="test")
 
         # todo: save best model
 
         # save success rate
-        self.test_game_success_rates.append(self.test_game_success_counter/self.test_max_games)
+        self.test_game_success_rates.append(self.test_game_success_counter / self.test_max_games)
 
         # logging
         test_print_logs(mean(self.test_scores[-self.log_interval:]),
@@ -320,7 +326,6 @@ class Experiment:
         avg_length = 0
 
         for i_game in range(1, self.max_games + 1):
-            # print("Resuming Training")
             start_game_time = time.time()
             prev_observation, setting_up_duration = self.env.reset()  # stores the state of the environment
             timed_out = False  # used to check if we hit the maximum train_game_number duration
@@ -388,7 +393,8 @@ class Experiment:
             avg_game_duration = np.mean(self.game_duration_list[-self.log_interval:])
             running_reward, avg_length = print_logs(self.config["game"]["verbose"],
                                                     self.config['game']['test_model'],
-                                                    self.train_total_steps, i_game, self.train_total_steps, running_reward,
+                                                    self.train_total_steps, i_game, self.train_total_steps,
+                                                    running_reward,
                                                     avg_length, self.log_interval, avg_game_duration)
 
         tracker.print_diff()  # to track memory leaks
@@ -549,7 +555,7 @@ class Experiment:
             print("Unknown mode in update_best_reward")
             exit(1)
 
-    def update_metrics(self, game_reward, dist_travel, current_timestep, mode):
+    def update_metrics(self, game_reward, dist_travel, current_timestep, timed_out, game_duration, mode):
         """
         Updates train metrics
         @:param type: train or test
@@ -561,12 +567,13 @@ class Experiment:
             self.update_best_reward(game_reward, current_timestep, mode="train")
 
             # keep track of best game score and when it occurred
-            score = self.get_score(current_timestep)
-            print("score {}".format(score))
+            score = 0 if timed_out else self.get_score(current_timestep)
+            time_score = 0 if timed_out else self.get_time_score(game_duration)
             self.update_best_score(score, current_timestep, mode="train")
 
             # keep track of the game score history
             self.train_scores.append(score)
+            self.train_time_scores.append(time_score)
             # keep track of the game reward history
             self.train_rewards.append(game_reward)
             # keep track of the ball's travelled distance
@@ -577,12 +584,16 @@ class Experiment:
             # keep track of best game reward
             self.update_best_reward(game_reward, current_timestep, mode="test")
             # keep track of best game score and when it occurred
-            score = self.get_score(current_timestep)
+            score = 0 if timed_out else self.get_score(current_timestep)
+            time_score = 0 if timed_out else self.get_time_score(game_duration)
+
             print("score {}".format(score))
 
             self.update_best_score(score, current_timestep, mode="test")
 
             self.test_scores.append(score)
+            self.test_time_scores.append(time_score)
+
             # keep track of the game reward history
             self.test_rewards.append(game_reward)
             # keep track of the ball's travelled distance
@@ -597,8 +608,6 @@ class Experiment:
         """
         Updates experiment time duration metrics.
         """
-        print("redundant_end_duration {}".format(redundant_end_duration))
-
         if mode == "train":
             # keep track of the game score history
             game_duration = end_game_time - start_game_time - redundant_end_duration
@@ -615,6 +624,7 @@ class Experiment:
         print("game_duration {}".format(game_duration))
         # the net total duration of the experiment
         self.duration_pause_total += redundant_end_duration
+        return game_duration
 
     def update_test_metrics(self, duration_pause, start_game_time, game_reward, dist_travel, step_counter, best_score):
         """
@@ -667,7 +677,7 @@ class Experiment:
         start_time = time.time()
         # if we do not test the model and the agent is ready to learn
         if not self.test_model and self.ready_to_learn(i_game):
-            print("update interval: {}".format(self.agent.update_interval))
+            # print("update interval: {}".format(self.agent.update_interval))
             # check if it is time to learn
             if i_game % self.agent.update_interval == 0:
                 self.train_game_success_rates.append(self.train_game_success_counter / self.agent.update_interval)
@@ -679,9 +689,9 @@ class Experiment:
                                                              self.agent.update_interval, self.config)
 
                 # print staff
-                print("Update Cycles: {}".format(self.update_cycles))
-                print("Max games: {}".format(self.max_games))
-                print("Max duration of each game: {}".format(self.max_game_duration))
+                # print("Update Cycles: {}".format(self.update_cycles))
+                # print("Max games: {}".format(self.max_games))
+                # print("Max duration of each game: {}".format(self.max_game_duration))
 
                 if self.update_cycles > 0:
                     # perform an offline gradient update
@@ -692,7 +702,6 @@ class Experiment:
                     # save the models after each grad update
                     self.agent.save_models()
         self.offline_update_durations.append(time.time() - start_time)
-
 
     def testing_session(self, i_game):
         """
@@ -729,3 +738,6 @@ class Experiment:
 
     def get_score(self, current_timestep):
         return self.max_score - current_timestep
+
+    def get_time_score(self, game_duration):
+        return self.max_game_duration - game_duration
