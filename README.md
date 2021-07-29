@@ -1,12 +1,30 @@
-﻿# Maze 3D Collaborative Learning on shared task
+﻿# Maze 3D version 2 Collaborative Learning on shared task
 
 ### Description
-A human-agent collaborative game in a [virtual environment](https://github.com/ligerfotis/maze_RL_v2/blob/master/maze3D_new) based on the work of Shafti et al. (2020) [1]. Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [2] with modifications for discrete action space [3].
+A human- RL agent collaborative game on a [graphical environment](https://github.com/ligerfotis/MazeUnity). This is an extension of [this work](https://github.com/ligerfotis/maze3d_collaborative).
+The environment is build in Unity and communicates with the experiment via a HTTP server.
+Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [[2]](#slm) with modifications for discrete action space [[3]](#christodoulou).
 
+### Experiment Set Up
+The set-up consists of 3 components:
+1. The [Maze Server](https://github.com/panos-stavrianos/maze_server): Dedicated HTTP server that takes data from the experiment (mazeRL) and passes them to the Unity environment (mazeUnity) and vice versa.
+2. The online version of the [MazeRL](https://github.com/ligerfotis/maze_RL_online) experiment: Includes the training loops, the RL agent and different configuration files.
+3. The graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity): A simulation of the real world experiment from Shafti et al. (2020) [[1]](#shafti)
+
+The pipeline to start an experiment is described bellow:
+* Start the dedicated [Maze Server](https://github.com/panos-stavrianos/maze_server) (See [Run Maze Server](#run-maze-server)) 
+  * Can be started after MazeRL has started
+  * If started before MazeRL has it will wait for it to connect.
+  * Receives a configuration file from MazeRL and delivers it to MazeUnity upon startup of the latter.
+  
+* Start the experiment [MazeRL](https://github.com/ligerfotis/maze_RL_online) (See [Run MazeRL](#run-mazerl)) 
 ### Installation
-* Run `source install_dependencies/install.sh`. A python virtual environment will be created and the necessary libraries will be installed. Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
+* Run `source install_dependencies/install.sh`. A python virtual environment will be created, and the necessary libraries will be installed. Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
 
-### Run
+### Run Maze Server
+
+### Run MazeRL
+
 * Run `python game/maze3d_human_only_test.py game/config/onfig_human_test.yaml <participant_name>` for human-only game.
 * Run `python game/sac_maze3d_train.py game/config/<config_sac> <participant_name>` for human-agent game.
   * Notes before training: 
@@ -14,6 +32,7 @@ A human-agent collaborative game in a [virtual environment](https://github.com/l
      * The program will create a `/tmp` and a `/plot` folder (if they do not exist) in the `results/` folder. The `/tmp` folder contains CSV files with information of the game. The `/plot` folder contains figures for tha game. See [here](#Experiment-Result-Output-Files) for more details.
      * The program will automatically create an identification number after your name on each folder name created
   
+### Run MazeUnity
 
 ### Configuration
 * In the game/config folder several YAML files exist for the configuration of the experiment. The main parameters are listed below.
@@ -61,10 +80,10 @@ Contents of a`/plot` folder:
   * `training_logs.pkl`: a pandas framework saves in pickle format that contains the action and state for each training game step.
 
 ### References
-[1] Shafti, Ali, et al. "Real-world human-robot collaborative reinforcement learning." arXiv preprint arXiv:2003.01156 (2020).
+<a id="1">[shafti]</a>  Shafti, Ali, et al. "Real-world human-robot collaborative reinforcement learning." arXiv preprint arXiv:2003.01156 (2020).
 
-[2] https://github.com/kengz/SLM-Lab
+<a id="1">[slm]</a> https://github.com/kengz/SLM-Lab
 
-[3] Christodoulou, Petros. "Soft actor-critic for discrete action settings." arXiv preprint arXiv:1910.07207 (2019).
+<a id="1">[christodoulou]</a> Christodoulou, Petros. "Soft actor-critic for discrete action settings." arXiv preprint arXiv:1910.07207 (2019).
 
-[4] Fotios Lygerakis, Maria Dagioglou, and Vangelis Karkaletsis. 2021. Accelerating Human-Agent Collaborative Reinforcement Learning. InThe 14th PErvasive Technologies Related to Assistive Environments Conference (PETRA2021), June 29-July 2, 2021, Corfu, Greece.ACM, New York, NY, USA, 3 pages.https://doi.org/10.1145/3453892.3454004
+<a id="1">[accelHRC]</a> Fotios Lygerakis, Maria Dagioglou, and Vangelis Karkaletsis. 2021. Accelerating Human-Agent Collaborative Reinforcement Learning. InThe 14th PErvasive Technologies Related to Assistive Environments Conference (PETRA2021), June 29-July 2, 2021, Corfu, Greece.ACM, New York, NY, USA, 3 pages.https://doi.org/10.1145/3453892.3454004
