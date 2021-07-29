@@ -13,18 +13,18 @@ The set-up consists of 3 components:
 3. The graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity): A simulation of the real world experiment from Shafti et al. (2020) [1]
 
 The pipeline to start an experiment is described bellow:
-* Start the dedicated [Maze Server](https://github.com/panos-stavrianos/maze_server) (See [Run Maze Server](#run-maze-server)) 
+* Start the dedicated [Maze Server](https://github.com/panos-stavrianos/maze_server)
   * Can be started after MazeRL has started
   * If started before MazeRL has it will wait for it to connect.
   * Receives a configuration file from MazeRL and delivers it to MazeUnity upon startup of the latter.
   
 * Start the experiment [MazeRL](https://github.com/ligerfotis/maze_RL_online) (See [Run MazeRL](#run-mazerl))
 
-* Open the graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity) (See [Run MazeRL](#run-mazeunity))
+* Open the graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity)
 ### Installation
-* Run `source install_dependencies/install.sh`. A python virtual environment will be created and the necessary libraries will be installed. Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
-
-### Run Maze Server
+* Run `source install_dependencies/install.sh`. 
+  - A python virtual environment will be created and the necessary libraries will be installed.
+  - Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
 
 ### Run MazeRL
 
@@ -33,9 +33,7 @@ The pipeline to start an experiment is described bellow:
      * Set the <participant_name> to the name of the participant.
      * The program will create a `/tmp` and a `/plot` folder (if they do not exist) in the `results/` folder. The `/tmp` folder contains CSV files with information of the game. The `/plot` folder contains figures for tha game. See [here](#Experiment-Result-Output-Files) for more details.
      * The program will automatically create an identification number after your name on each folder name created
-  
-### Run MazeUnity
-
+    
 ### Configuration
 * In the game/config folder several YAML files exist for the configuration of the experiment. The main parameters are listed below.
     * `game/discrete_input`: True if the keyboard input is discrete (False for continuous). Details regarding the discrete and continuous human input mode can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game)
