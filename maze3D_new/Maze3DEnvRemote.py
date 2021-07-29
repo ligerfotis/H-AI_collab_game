@@ -113,7 +113,7 @@ class Maze3D:
         start_time = time.time()
         res = self.send("/reset")
         set_up_time = time.time() - start_time
-        print("reset time:", set_up_time)
+        # print("reset time:", set_up_time)
         # return np.array(res['observation']), res['setting_up_duration']
         return np.asarray(res['observation']), set_up_time
 

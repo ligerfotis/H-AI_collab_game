@@ -10,6 +10,11 @@ game:
     save: True # Save models and logs
     human_alone: False # human is playing alone
 
+    # input speed as translated by the game
+    human_speed: 50
+    agent_speed: 50
+    discrete_angle_change: 3
+
     # position of the goal on the board
     goal: "left_down" # "left_down" "left_up" "right_down"
 
@@ -33,9 +38,9 @@ SAC:
   reward_function: Shafti
 
 Experiment:
-  start_with_testing_random_agent: True # True to start experiment with testing human with random agent
+  start_with_testing_random_agent: False # True to start experiment with testing human with random agent
   online_updates: True # True if a single gradient update happens after every state transition
-  test_interval: 10
+  test_interval: 10  # the interval of testing sessions
 
   # offline gradient updates allocation
   # Normal: allocates evenly the total number of updates through each session
@@ -50,8 +55,8 @@ Experiment:
 
   max_games_mode:
     max_games: 70  # max training games per experiment
-    max_duration: 40  # max duration per game in seconds
-    buffer_memory_size: 1000000
+    max_duration: 40 # max duration per game in seconds
+    buffer_memory_size: 100000000
     action_duration: 0.2 # Time duration in sec between consecutive RL agent actions
     start_training_step_on_game: 10 # will not train the agent before this trial
     stop_random_agent: 10 # stops using random agent on this trial and start using SAC
@@ -62,15 +67,15 @@ Experiment:
 
   max_interactions_mode:
     total_timesteps: 3500  # Total number of interactions per game
-    max_timesteps_per_game: 40  # Max duration of an episode (in seconds). An episode ends if the ball hits the target or if we reach the time limit
+    max_timesteps_per_game: 10  # Max duration of an episode (in seconds). An episode ends if the ball hits the target or if we reach the time limit
     buffer_memory_size: 1000
     action_duration: 0.2 # Time duration between consecutive RL agent actions
-    start_training_step_on_timestep: 500 # Will not train the agent before this number of interactions occur
-    learn_every_n_timesteps: 500 # # Perform offline gradient updates after every `learn_every_n_timesteps` interactions
+    start_training_step_on_timestep: 10 # Will not train the agent before this number of interactions occur
+    learn_every_n_timesteps: 10 # # Perform offline gradient updates after every `learn_every_n_timesteps` interactions
     test_loop:
-    update_cycles: 20000 # Total number of offline gradient updates throughout the whole experiment
+    update_cycles: 100 # Total number of offline gradient updates throughout the whole experiment
     reward_scale: 2
-    log_interval: 2  # games
+    log_interval: 10  # games
 
   # Test the agent during training
   test_loop:
@@ -80,6 +85,7 @@ Experiment:
     max_score: 200
 
 GUI:
-  start_up_screen_display_duration: 5 # the time in sec the set-up screen is being displayed
-  timeout_screen_display_duration: 3  # the time in sec the timeout screen is being displayed
-  goal_screen_display_duration: 3 # the time in sec the goal screen is being displayed
+  start_up_screen_display_duration: 2 # the time in sec the set-up screen is being displayed
+  popup_window_time: 3  # the time in sec the timeout or goal screen is being displayed
+
+

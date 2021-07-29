@@ -6,67 +6,16 @@ import matplotlib.pyplot as plt
 
 dir = "results/figures/"
 
-file_1 = 'results/tmp/max_games_mode_continuous_O_O_a_28K_every10_Shafti_descending_expert_remote_3/test_scores.csv'
-file_2 = 'results/tmp/max_games_mode_continuous_O_O_a_28K_every10_Shafti_descending_expert_remote_4/test_scores.csv'
 
-# file_e1_10_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_1/test_scores.csv'
-# file_e1_10_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_2/test_scores.csv'
-# file_e1_10_3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_3/test_scores.csv'
-# file_e1_10_4 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_expert_remote_4/test_scores.csv'
-#
-# file_e1_5_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_1/test_scores.csv'
-# file_e1_5_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_2/test_scores.csv'
-# file_e1_5_3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_3/test_scores.csv'
-# file_e1_5_4 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_expert_remote_4/test_scores.csv'
+file_1 = 'results/tmp/max_games_mode_continuous_O_a_70K_every10_Shafti_descending_maze_v2_expert_online_40games_1/test_scores.csv'
+file_2 = 'results/tmp/max_games_mode_continuous_O_a_70K_every10_Shafti_descending_maze_v2_expert_online_40games_2/test_scores.csv'
+file_3 = 'results/tmp/max_games_mode_continuous_O_a_70K_every10_Shafti_descending_maze_v2_expert_online_40games_3/test_scores.csv'
+file_4 = 'results/tmp/max_games_mode_continuous_O_O_a_70K_every10_Shafti_descending_maze_v2_expert_online_70games_1/test_scores.csv'
+file_5 = 'results/tmp/max_games_mode_continuous_O_O_a_70K_every10_Shafti_descending_maze_v2_expert_online_70games_2/test_scores.csv'
+file_6 = 'results/tmp/max_games_mode_continuous_O_O_a_70K_every10_Shafti_descending_maze_v2_expert_online_70games_3/test_scores.csv'
 
-
-# file_local_e2 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_fotis_local_1/test_scores.csv'
-
-# file_online_e1_c = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_fotis_remote_1/test_scores.csv'
-# # file_online_e2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_fotis_remote_2/test_scores.csv'
-# # file_local_e3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_fotis_40_local_1/test_scores.csv'
-# file_local_e1_d = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_fotis_local_1/test_scores.csv'
-
-# file_local_p2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_christina_local_1/test_scores.csv'
-# file_online_p2_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_christina_online_1/test_scores.csv'
-# file_online_p2_2 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_christina_online_1/test_scores.csv'
-
-# file_p2_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_participant_2_remote_1/test_scores.csv'
-# file_p2_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_participant_2_remote_2/test_scores.csv'
-# file_p2_3 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_participant_2_remote_1/test_scores.csv'
-# file_p2_4 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_participant_2_local_1/test_scores.csv'
-# file_p2_5 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every5_Shafti_descending_participant_2_remote_1/test_scores.csv'
-# file_p2_6 = 'results/tmp/max_games_mode_discrete_O_O_a_60K_every10_Shafti_descending_participant_2_remote_1/test_scores.csv'
-
-# file_p1_1 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every10_Shafti_descending_participant_1_remote_1/test_scores.csv'
-# file_p1_2 = 'results/tmp/max_games_mode_continuous_O_O_a_60K_every5_Shafti_descending_participant_1_remote_1/test_scores.csv'
-
-# file_1t = 'results/tmp/loop1_O_O_a_28K_every10_Sparse_2_descending_thanasis_1/test_score_history.csv'
-# file_2t = 'results/tmp/loop1_O_O_a_28K_every10_Sparse_2_descending_thanasis_2/test_score_history.csv'
-# file_3t = 'results/tmp/loop1_O_O_a_28K_every10_Sparse_2_descending_thanasis_3/test_score_history.csv'
-#
-# file_1f = 'results/tmp/expert_alg1_online_28K_every10_sparse2_descending_1/test_score_history.csv'
-# file_2f = 'results/tmp/expert_alg1_online_28K_every10_sparse2_descending_2/test_score_history.csv'
-# file_3f = 'results/tmp/expert_alg1_online_28K_every10_sparse2_descending_3/test_score_history.csv'
-
-# legend_names_1 = ["offline_2000_sparse1", "offline_2000_sparse2"]
-# legend_names_2 = ["offline_154_every10_sparse1"]
-# legend_names = ["offline_28K_every5_sparse2", "online_28K_every5_sparse2", "offline_154K_every10_sparse2", "online_154K_every10_sparse2"]
-# legend_names = ["O-O-a 154K", "O-a 154K", "O-O-a 28K Descending", "O-a 28K Descending"]
-# legend_names = ["O-O-a 154K", "O-a 154K", "O-O-a 28K", "O-a 28K"]
-# legend_names = ["O-O-a 28K Old", "O-O-a 60K New"]
-# legend_names = ["O-O-a 28K Maze_v0", "O-O-a 60K  Maze_v1", "O-O-a 60K  Maze_v2"]
-# legend_names = ["O-O-a 60K Expert online learn every 5", "O-O-a 60K Expert online learn every 10 Trial:1", "O-O-a 60K Expert online learn every 10 Trial:2",
-#                 "O-O-a 60K Participant 1 online learn every 10", "O-O-a 60K Participant 2 online learn every 10 Trial:1",
-#                 "O-O-a 60K Participant 2 online learn every 10 Trial:2"]
-# legend_names = ["O-O-a-5 60K Expert continuous",
-#                 "O-O-a-5 60K Expert discrete",
-#                 "O-O-a-5 60K Participant 2 continuous (avg 2 runs)",
-#                 "O-O-a-5 60K Participant 2 discrete"]
-legend_names = ["O-O-a 28K Expert every 10 Trial:1", "O-O-a 28K Expert every 10 Trial:2"]
-
-# filename_list_1 = [file_name_1, file_name_2]
-# filename_list_2 = [file_name_3, file_name_4]
+legend_names = ["O-O-a 70K | Train-Games:40 | GU/Test Sessions:3 | online",
+                "O-O-a 70K | Train-Games:70 | GU/Test Sessions:6 | online"]
 
 # colors = ["g", "b", "r", "m", "navy", "darkorange"]
 # colors_light = ["limegreen", "cornflowerblue", "lightcoral", "violet", "slateblue", "wheat"]
@@ -77,26 +26,34 @@ end = 205
 
 
 def plot(filename_list, legend_names, figure_file=None):
+    """
+    Plot the mean and sem of list groups
+    :param filename_list: list of lists (groups) to average from
+    :param legend_names:
+    :param figure_file:
+    :return:
+    """
     fig, ax = plt.subplots()
     axes = plt.gca()
     axes.set_ylim([start, end])
     # colors = sns.color_palette("husl", 5)
     with sns.axes_style("darkgrid"):
-        for c, file_name_sublist in enumerate(filename_list):
-            merge_lists = []
-            for file_name in file_name_sublist:
+        for c, group_files in enumerate(filename_list):
+            group_data_lists = []
+            # read the data of each list in the group
+            for file_name in group_files:
                 my_data = np.genfromtxt(file_name, delimiter=',')
-                merge_lists.append(my_data)
-            # random = np.genfromtxt(random_file, delimiter=',')
-            # means, stds, x_axis = [mean(random)], [stdev(random) / sqrt(len(random))], [0]
-            means, stds, x_axis = [], [], []
-            for i in range(0, len(merge_lists[0]), 10):
-                data = []
-                for file_to_merge in merge_lists:
+                group_data_lists.append(my_data)
+
+            data, means, stds, x_axis = [], [], [], []
+            for i in range(0, len(group_data_lists[0]), 10):
+                for file_to_merge in group_data_lists:
                     data.extend(file_to_merge[i:i + 10])
-                means.append(mean(data))
-                stds.append(stdev(data) / sqrt(len(data)))
-                x_axis.append(i)
+                if i >= 10:
+                    means.append(mean(data))
+                    stds.append(stdev(data) / sqrt(len(data)))
+                    x_axis.append(i/10-1)
+                    data = []
 
             means, stds, x_axis = np.asarray(means), np.asarray(stds), np.asarray(x_axis)
             # meanst = np.array(means.ix[i].values[3:-1], dtype=np.float64)
@@ -108,7 +65,7 @@ def plot(filename_list, legend_names, figure_file=None):
                 plt.errorbar(x_axis, means, stds, label=legend_names[c], marker='*')
         ax.yaxis.set_ticks(np.arange(start, end, 10))
         ax.set_ylabel('Score')
-        ax.set_xlabel('Trials')
+        ax.set_xlabel('Testing Sessions')
         plt.grid()
         plt.legend(loc='lower right')
         plt.title("Testing Score Mean and SEM")
@@ -122,7 +79,7 @@ def plot(filename_list, legend_names, figure_file=None):
 
 # plot([[file_3], [file_4]], legend_names, figure_file=dir + "40s_vs_30s_v2.png")
 
-plot([[file_1], [file_2]], legend_names, figure_file=dir + "maze_big_hole.png")
+plot([[file_1, file_2, file_3], [file_4, file_5, file_6]], legend_names, figure_file=dir + "20 random games 70K 40 vs 70 games.png")
 
 # plot([[file_1f, file_2f, file_3f, file_1t, file_2t, file_3t], [file_1, file_2], [file_3]], legend_names, figure_file=dir + "maze_versions.png")
 # plot([[file_4],[file_1c], [file_1p]], legend_names, figure_file=dir + "expert_vs_novel_users_40games.png")

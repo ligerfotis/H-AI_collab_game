@@ -44,6 +44,7 @@ class Experiment:
         if not config['game']['human_alone']:
             self.max_score = config['Experiment']['test_loop']['max_score']
             self.test_model = config['game']['test_model']
+            self.start_testing = config['Experiment'][self.mode]['start_testing']
             self.test_interval = config['Experiment']['test_interval']
             self.test_action_duration = config['Experiment']['test_loop']['action_duration']
             self.test_max_duration = config['Experiment']['test_loop']['max_duration']
@@ -145,7 +146,6 @@ class Experiment:
                 # Environment step
                 transition = self.env.step(env_agent_action, timed_out, self.action_duration, mode='train')
                 observation, reward, done, train_fps, duration_pause, action_pair, internet_delay = transition
-
                 redundant_end_duration += duration_pause  # keep track of the total paused time
 
                 # keep track of the fps
@@ -235,6 +235,7 @@ class Experiment:
         self.test_game_success_counter = 0
 
         for game in range(1, self.test_max_games + 1):
+            print("Test Game: {}".format(game))
             prev_observation, setting_up_duration = self.env.reset()  # get environment's initial state
             timed_out = False  # turn to false when the game has been timed out
             game_reward = 0  # the cumulative game reward
@@ -587,7 +588,7 @@ class Experiment:
             score = 0 if timed_out else self.get_score(current_timestep)
             time_score = 0 if timed_out else self.get_time_score(game_duration)
 
-            print("score {}".format(score))
+            # print("score {}".format(score))
 
             self.update_best_score(score, current_timestep, mode="test")
 
@@ -708,7 +709,7 @@ class Experiment:
         Perform a number of test games.
         :param i_game: current game
         """
-        if i_game % self.test_interval == 0 and self.test_max_games > 0:
+        if i_game % self.test_interval == 0 and self.test_max_games > 0 and i_game >= self.start_testing:
             self.test_max_games_mode(randomness_criterion=None)
             print("Continue Training.")
 

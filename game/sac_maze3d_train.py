@@ -66,8 +66,8 @@ def main(argv):
 
         if not config['game']['test_model']:
             # save rest of the experiment logs and plot them
-            experiment.test_scores = experiment.train_scores[:experiment.test_max_games] + experiment.test_scores
-            experiment.test_time_scores = experiment.train_time_scores[:experiment.test_max_games] + experiment.test_time_scores
+            experiment.test_scores = experiment.train_scores[:20] + experiment.test_scores
+            experiment.test_time_scores = experiment.train_time_scores[:20] + experiment.test_time_scores
 
             save_metrics(experiment, save_dir)
             plot_metrics(experiment, plot_dir)
