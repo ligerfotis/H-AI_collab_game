@@ -29,6 +29,10 @@ The pipeline to start an experiment is described bellow:
 ### Run MazeRL
 
 * Run `python game/sac_maze3d_train.py game/config/<config_sac> <participant_name>` for human-agent game.
+  * Example:
+    
+        python game/sac_maze3d_train.py game/config/config_sac_60K_O-O-a_descending.yaml participant_1
+
   * Notes before training: 
      * Set the <participant_name> to the name of the participant.
      * The program will create a `/tmp` and a `/plot` folder (if they do not exist) in the `results/` folder. The `/tmp` folder contains CSV files with information of the game. The `/plot` folder contains figures for tha game. See [here](#Experiment-Result-Output-Files) for more details.
