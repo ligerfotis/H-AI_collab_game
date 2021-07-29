@@ -3,13 +3,13 @@
 ### Description
 A human- RL agent collaborative game on a [graphical environment](https://github.com/ligerfotis/MazeUnity). This is an extension of [this work](https://github.com/ligerfotis/maze3d_collaborative).
 The environment is build in Unity and communicates with the experiment via a HTTP server.
-Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [[2]](#slm) with modifications for discrete action space [[3]](#christodoulou).
+Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [2] with modifications for discrete action space [3].
 
 ### Experiment Set Up
 The set-up consists of 3 components:
 1. The [Maze Server](https://github.com/panos-stavrianos/maze_server): Dedicated HTTP server that takes data from the experiment (mazeRL) and passes them to the Unity environment (mazeUnity) and vice versa.
 2. The online version of the [MazeRL](https://github.com/ligerfotis/maze_RL_online) experiment: Includes the training loops, the RL agent and different configuration files.
-3. The graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity): A simulation of the real world experiment from Shafti et al. (2020) [[1]](#shafti)
+3. The graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity): A simulation of the real world experiment from Shafti et al. (2020) [1]
 
 The pipeline to start an experiment is described bellow:
 * Start the dedicated [Maze Server](https://github.com/panos-stavrianos/maze_server) (See [Run Maze Server](#run-maze-server)) 
@@ -19,7 +19,7 @@ The pipeline to start an experiment is described bellow:
   
 * Start the experiment [MazeRL](https://github.com/ligerfotis/maze_RL_online) (See [Run MazeRL](#run-mazerl)) 
 ### Installation
-* Run `source install_dependencies/install.sh`. A python virtual environment will be created, and the necessary libraries will be installed. Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
+* Run `source install_dependencies/install.sh`. A python virtual environment will be created and the necessary libraries will be installed. Furthermore, the directory of the repo will be added to the `PYTHONPATH` environmental variable.
 
 ### Run Maze Server
 
@@ -80,10 +80,10 @@ Contents of a`/plot` folder:
   * `training_logs.pkl`: a pandas framework saves in pickle format that contains the action and state for each training game step.
 
 ### References
-<a id="1">[shafti]</a>  Shafti, Ali, et al. "Real-world human-robot collaborative reinforcement learning." arXiv preprint arXiv:2003.01156 (2020).
+[1] Shafti, Ali, et al. "Real-world human-robot collaborative reinforcement learning." arXiv preprint arXiv:2003.01156 (2020).
 
-<a id="1">[slm]</a> https://github.com/kengz/SLM-Lab
+[2] https://github.com/kengz/SLM-Lab
 
-<a id="1">[christodoulou]</a> Christodoulou, Petros. "Soft actor-critic for discrete action settings." arXiv preprint arXiv:1910.07207 (2019).
+[3] Christodoulou, Petros. "Soft actor-critic for discrete action settings." arXiv preprint arXiv:1910.07207 (2019).
 
-<a id="1">[accelHRC]</a> Fotios Lygerakis, Maria Dagioglou, and Vangelis Karkaletsis. 2021. Accelerating Human-Agent Collaborative Reinforcement Learning. InThe 14th PErvasive Technologies Related to Assistive Environments Conference (PETRA2021), June 29-July 2, 2021, Corfu, Greece.ACM, New York, NY, USA, 3 pages.https://doi.org/10.1145/3453892.3454004
+[4] Fotios Lygerakis, Maria Dagioglou, and Vangelis Karkaletsis. 2021. Accelerating Human-Agent Collaborative Reinforcement Learning. InThe 14th PErvasive Technologies Related to Assistive Environments Conference (PETRA2021), June 29-July 2, 2021, Corfu, Greece.ACM, New York, NY, USA, 3 pages.https://doi.org/10.1145/3453892.3454004
