@@ -21,6 +21,13 @@ The pipeline to start an experiment is described bellow:
 * Start the experiment [MazeRL](https://github.com/ligerfotis/maze_RL_online) (See [Run MazeRL](#run-mazerl))
 
 * Open the graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity)
+
+MazeUnity receives actions (plus other important information) and sends back observations (plus other important information) to MazeRL.
+
+The above messages are being exchanged via an HTTP server.
+
+MazeRL and MazeUnity work as HTTP clients.
+
 ### Installation
 * Run `source install_dependencies/install.sh`. 
   - A python virtual environment will be created and the necessary libraries will be installed.
