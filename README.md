@@ -3,7 +3,9 @@
 
 ### Description
 A human- RL agent collaborative game on a [graphical environment](https://github.com/ligerfotis/MazeUnity). This is an extension of [this work](https://github.com/ligerfotis/maze3d_collaborative).
+
 The environment is build in Unity and communicates with the experiment via a HTTP server.
+
 Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [2] with modifications for discrete action space [3].
 
 ### Experiment Set Up
@@ -17,6 +19,7 @@ The pipeline to start an experiment is described bellow:
   * Can be started after MazeRL has started
   * If started before MazeRL has it will wait for it to connect.
   * Receives a configuration file from MazeRL and delivers it to MazeUnity upon startup of the latter.
+  * Can be in the same machine with MazeRL (recommended for reduced delay) or in a standalone server (docker instructions in its repo).
   
 * Start the experiment [MazeRL](https://github.com/ligerfotis/maze_RL_online) (See [Run MazeRL](#run-mazerl))
 
@@ -47,10 +50,17 @@ MazeRL and MazeUnity work as HTTP clients.
     
 ### Configuration
 * In the game/config folder several YAML files exist for the configuration of the experiment. The main parameters are listed below.
-    * `game/discrete_input`: True if the keyboard input is discrete (False for continuous). Details regarding the discrete and continuous human input mode can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game)
-    * `SAC/reward_function`: Type of reward function. Details about the predefined reward functions and how to define a new one can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game).
-    * `Experiment/mode`: Choose how the game will be terminated; either when a number of games, or a number of interactions is completed.
-    * `SAC/discrete`: Discrete or normal SAC (Currently only the discrete SAC is compatible with the game)
+    * `game:discrete_input`: True if the keyboard input is discrete (False for continuous). Details regarding the discrete and continuous human input mode can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game)
+    * `SAC:reward_function`: Type of reward function. Details about the predefined reward functions and how to define a new one can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game).
+    * `Experiment:mode`: Choose how the game will be terminated; either when a number of games, or a number of interactions is completed.
+    * `SAC:discrete`: Discrete or normal SAC (Currently only the discrete SAC is compatible with the game)
+    
+* `game/network_config.yaml` contains the information of where to locate each component of the set-up (Maze_RL, Maze-Server and MazeUnity)
+    * (if applicable)`ip_distributor`: the location of an instance of the maze-server, that MazeUnity first speaks to, in order to know where to look for Maze-Server. 
+      Can be located either on a remote server or locally (same machine as MazeRL).
+      Its purpose is to allow the Maze-Server or MazeRL moving to different locations.
+    * `maze_server`: the location of the maze-server.
+    * `maze_rl`: the location of mazeRL.
   
 ### Play
 Directions of how to play the game are given in [MazeUnity](https://github.com/ligerfotis/MazeUnity).
