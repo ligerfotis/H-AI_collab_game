@@ -2,9 +2,9 @@
 ## Collaborative Reinforcement Learning on Human-Computer shared task
 
 ### Description
-A human- RL agent collaborative game on a [graphical environment](https://github.com/ligerfotis/MazeUnity). This is an extension of [this work](https://github.com/ligerfotis/maze3d_collaborative).
+A human-RL agent collaborative game in a [graphical environment](https://github.com/ligerfotis/MazeUnity). This is an extension of [this work](https://github.com/ligerfotis/maze3d_collaborative).
 
-The environment is build in Unity and communicates with the experiment via a HTTP server.
+The environment is build in Unity and communicates with the experiment via an HTTP server.
 
 Collaborative Learning is achieved through Deep Reinforcement Learning (DRL). The Soft-Actor Critic (SAC) algorithm is used [2] with modifications for discrete action space [3].
 
@@ -15,7 +15,7 @@ The set-up consists of 3 components:
 3. The graphical environment [MazeUnity](https://github.com/ligerfotis/MazeUnity): A simulation of the real world experiment from Shafti et al. (2020) [1]
 
 The pipeline to start an experiment is described bellow:
-* Start the dedicated [Maze Server](https://github.com/panos-stavrianos/maze_server)
+* Start the dedicated [Maze-Server](https://github.com/panos-stavrianos/maze_server)
   * Can be started after MazeRL has started
   * If started before MazeRL has it will wait for it to connect.
   * Receives a configuration file from MazeRL and delivers it to MazeUnity upon startup of the latter.
@@ -27,7 +27,7 @@ The pipeline to start an experiment is described bellow:
 
 MazeUnity receives actions (plus other important information) and sends back observations (plus other important information) to MazeRL.
 
-The above messages are being exchanged via the HTTP server (Maze-Server).
+The above messages are being exchanged via the HTTP server ([Maze-Server](https://github.com/panos-stavrianos/maze_server)).
 
 MazeRL and MazeUnity work as HTTP clients.
 
@@ -49,16 +49,21 @@ MazeRL and MazeUnity work as HTTP clients.
      * The program will automatically create an identification number after your name on each folder name created
     
 ### Configuration
+
+#### Game Configuration
 * In the game/config folder several YAML files exist for the configuration of the experiment. The main parameters are listed below.
     * `game:discrete_input`: True if the keyboard input is discrete (False for continuous). Details regarding the discrete and continuous human input mode can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game)
     * `SAC:reward_function`: Type of reward function. Details about the predefined reward functions and how to define a new one can be found [here](https://github.com/ligerfotis/maze_RL_v2/blob/master/game).
     * `Experiment:mode`: Choose how the game will be terminated; either when a number of games, or a number of interactions is completed.
     * `SAC:discrete`: Discrete or normal SAC (Currently only the discrete SAC is compatible with the game)
     
-* `game/network_config.yaml` contains the information of where to locate each component of the set-up (Maze_RL, Maze-Server and MazeUnity)
-    * (if applicable)`ip_distributor`: the location of an instance of the maze-server, that MazeUnity first speaks to, in order to know where to look for Maze-Server. 
+
+#### Components Connectivity Configuration
+* `game/network_config.yaml` contains the information of where to locate each component of the set-up (Maze_RL, Maze-Server and [MazeUnity](https://github.com/ligerfotis/MazeUnity)). This is sent upon connection set up to Maze-Server and from Maze-Server consequently to MazeUnity.
+    * (if applicable)`ip_distributor`: the location of an instance of the [Maze-Server](https://github.com/panos-stavrianos/maze_server), that MazeUnity first speaks to, in order to know where to look for Maze-Server. 
       Can be located either on a remote server or locally (same machine as MazeRL).
       Its purpose is to allow the Maze-Server or MazeRL moving to different locations.
+    If there is no need to be used, [MazeUnity](https://github.com/ligerfotis/MazeUnity) can be set up to locate directly Maze-Server
     * `maze_server`: the location of the maze-server.
     * `maze_rl`: the location of mazeRL.
   
