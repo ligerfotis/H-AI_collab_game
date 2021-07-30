@@ -1,9 +1,13 @@
-## Human Input
+In this directory live the files that define the experiment and learning loops, the reward functions, the update scheduler and the learning and networking configurations.
+
+## Notes on the code functionality
+
+### Human Input
 The human input is given to the system through the keyboard arrows and can be either discrete or continuous. 
-* Discrete input means that every key stroke produces one action. For another action, the human needs to release the button and press another one (or the same). 
+* Discrete input means that every keystroke produces one action. For another action, the human needs to release the button and press another one (or the same). 
 * Continuous input means that a new human action is given as long as a key is pressed. For a pressed key, a new action will be available every ~15ms.
 
-## Experiment
+### Experiment
 The main functions for running the game exist in the experiment.py
 * `max_games_mode`: Runs the game with maximum number of episodes
 * `max_interactions_mode`: Runs the game with maximum number of interactions

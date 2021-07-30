@@ -1,9 +1,8 @@
 import random
-import socket
 
 import numpy as np
 from plot_utils.plot_utils import get_config, plot_learning_curve, plot_test_score, plot, plot_mean_sem
-from server import Server
+from maze3D_new.server import Server
 
 
 def reward_function_timeout_penalty(goal_reached, timedout):

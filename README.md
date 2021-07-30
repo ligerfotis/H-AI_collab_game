@@ -27,7 +27,7 @@ The pipeline to start an experiment is described bellow:
 
 MazeUnity receives actions (plus other important information) and sends back observations (plus other important information) to MazeRL.
 
-The above messages are being exchanged via an HTTP server.
+The above messages are being exchanged via the HTTP server (Maze-Server).
 
 MazeRL and MazeUnity work as HTTP clients.
 
