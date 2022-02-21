@@ -1,5 +1,6 @@
 # Project exclude paths
 /venv/
+/env/
 /results/
 /plot_utils/plot_multiple_curves.py
 /game_stats/
