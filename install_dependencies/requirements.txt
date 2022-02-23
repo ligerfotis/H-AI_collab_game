@@ -1,3 +1,4 @@
+wheel
 matplotlib==3.3.3
 numpy==1.19.4
 pygame==2.0.0
@@ -11,6 +12,6 @@ torch==1.4.0
 tqdm==4.54.1
 seaborn~=0.11.1
 pympler~=0.9
-scipy~=1.7.0
+scipy~=1.5.4
 requests~=2.25.1
 pip~=21.1.2

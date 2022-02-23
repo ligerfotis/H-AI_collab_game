@@ -41,7 +41,7 @@ MazeRL and MazeUnity work as HTTP clients.
 * Run `python game/sac_maze3d_train.py game/config/<config_sac> <participant_name>` for human-agent game.
   * Example:
     
-        python game/sac_maze3d_train.py game/config/config_sac_60K_O-O-a_descending.yaml participant_1
+        python game/sac_maze3d_train.py game/config/config_sac_28K_O-O-a_descending.yaml participant_1
 
   * Notes before training: 
      * Set the <participant_name> to the name of the participant.
@@ -66,6 +66,7 @@ MazeRL and MazeUnity work as HTTP clients.
     If there is no need to be used, [MazeUnity](https://github.com/ligerfotis/MazeUnity) can be set up to locate directly Maze-Server
     * `maze_server`: the location of the maze-server.
     * `maze_rl`: the location of mazeRL.
+* Set **ALL** to `localhost` for playing the game locally. Otherwise, set a static IP (e.g. duckdns.org) and open the appropriate ports on your router.
   
 ### Play
 Directions of how to play the game are given in [MazeUnity](https://github.com/ligerfotis/MazeUnity).

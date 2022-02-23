@@ -1,11 +1,11 @@
-#ip_distributor: "http://localhost:8080"
+ip_distributor: "http://localhost:8080"
 #ip_distributor: "http://2.85.241.49:8080"
 #ip_distributor: "https://maze-server.app.orbitsystems.gr"
-ip_distributor: "http://maze3d.duckdns.org:8080"
+#ip_distributor: "http://maze3d.duckdns.org:8080"
 
 #maze_server: "http://2.85.241.49:8080"
-#maze_server: "http://localhost:8080"
-maze_server: "http://maze3d.duckdns.org:8080"
+maze_server: "http://localhost:8080"
+#maze_server: "http://maze3d.duckdns.org:8080"
 
 #maze_rl: "http://79.129.14.204:8080"
 #maze_rl: "http://maze3d.duckdns.org:8080"
