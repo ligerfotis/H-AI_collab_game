@@ -1,5 +1,5 @@
-﻿# MazeRL v2
-## Collaborative Reinforcement Learning on Human-Computer shared task
+﻿# H-AI_collab_game
+## Collaborative Human- RL agent game 
 
 ### Description
 A human-RL agent collaborative game in a [graphical environment](https://github.com/ligerfotis/MazeUnity). This is an extension of [this work](https://github.com/ligerfotis/maze3d_collaborative).
